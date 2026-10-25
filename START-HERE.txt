@@ -1,0 +1,46 @@
+ML SPORTSWEAR PHILIPPINES - START HERE
+
+WHAT'S INSIDE
+1. OFFLINE-DEMO.html      A clickable demo. Double-click to open in Chrome/Edge.
+2. app/ and components/  The actual Next.js website source code, with a persistent light/dark mode switch.
+3. supabase/schema.sql   Supabase database and private upload storage setup.
+4. README.md             Full step-by-step instructions (follow in order).
+5. PROJECT-OVERVIEW.md   Short explanation for your Software Design presentation.
+
+QUICK START (WINDOWS / VS CODE)
+A. Open this extracted ml-sportswear folder in VS Code.
+B. Open Terminal > New Terminal.
+C. Run: npm install
+D. Run: npm run dev
+E. In Chrome, visit: http://localhost:3000
+F. Try customizing at: http://localhost:3000/customize
+
+TO SAVE ACTUAL QUOTATION REQUESTS
+1. Go to supabase.com and create a project.
+2. Go to SQL Editor and run the ENTIRE supabase/schema.sql file.
+3. Copy .env.example and name the copy .env.local.
+4. Fill in your Supabase URL, publishable/anon key and server-only service-role key.
+5. Restart npm run dev.
+6. Submit an inquiry and check the orders table in Supabase.
+
+TO CREATE A SHAREABLE WEBSITE
+1. Upload this Next.js project (not your .env.local secrets) to GitHub.
+2. Visit vercel.com/new and import the GitHub repository.
+3. Add all 3 environment variables in Vercel project settings.
+4. Click Deploy and test the public URL Vercel gives you.
+
+IMPORTANT
+- Offline demo saves test requests only in your browser; it does not send real orders.
+- The Next.js website saves actual requests only after Supabase is connected.
+- The sample prices are NOT ML Sportswear's confirmed price list.
+- The current ML logo is text-only, pending the official approved brand artwork.
+- A real public Vercel link cannot exist until deployment in your Vercel account.
+
+For extra details, open README.md in VS Code (Markdown preview is Ctrl+Shift+V).
+
+THEME COLORS
+- Click the moon/sun button in the top-right corner to switch themes.
+- Light mode: porcelain blue-gray, white cards and navy accents.
+- Dark mode: midnight blue, slate cards and soft periwinkle accents.
+- Your chosen mode stays saved in the browser on reload.
+- To adjust colors, edit theme variables near the bottom of app/globals.css.
