@@ -171,7 +171,7 @@ export default function CustomizePage() {
             <p className="privacy-note"><ShieldCheck size={17}/> Your contact and delivery details are used to fulfill this order. Please do not include sensitive information in design notes.</p>
             {error && <div className="request-error" role="alert">{error}</div>}
             <button className="button button-dark next-button" type="submit" disabled={sending||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
-            <div className="hint"><Info size={16}/> Pricing shown is still a demo until ML Sportswear confirms actual rates. QR payment only activates when the shop configures PayMongo. COD does not collect money online.</div>
+            <div className="hint"><Info size={16}/> Pricing are beased on ML Sportswear's official price list. QR payment only activates when the shop configures PayMongo. COD does not collect money online.</div>
           </form>
         </section>}
       </div>
@@ -202,7 +202,7 @@ export default function CustomizePage() {
           </> : <p className="artwork-editor-empty">Add text or upload a logo to position it here.</p>}
         </div>}
         <div className="preview-card-bottom"><div><span>SELECTED PIECE</span><b>{selected.label}</b></div><div><span>COLORWAY</span><b>{PALETTE.find(c=>c.hex===color)?.name}</b></div><div className="preview-swatches"><i style={{background:color}}/><i style={{background:accentColor}}/><i style={{background:printColor}}/></div></div>
-      </div><div className="estimate-card"><div><span>Estimated sample total</span><b>{money(estimate)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} × {money(selected.price)}</span><span>Demo rates only</span></div><p>For prototype purposes. Final prices must be set and approved by ML Sportswear.</p></div></aside>
+      </div><div className="estimate-card"><div><span>Order Total</span><b>{money(estimate)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} × {money(selected.price)}</span><span>Based on selected items and quantities.</span></div><p>For prototype purposes. Final prices must be set and approved by ML Sportswear.</p></div></aside>
     </div>
   </div>;
 }
