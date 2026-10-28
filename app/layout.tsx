@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { CustomerNav } from '@/components/CustomerNav';
 
 export const metadata: Metadata = {
   title: 'ML Sportswear | Made for your team',
@@ -21,10 +22,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <nav className="site-nav" aria-label="Main navigation">
           <Link href="/">Home</Link><Link href="/customize">Customize</Link><Link href="/track">Track order</Link><a href="/#how-it-works">How it works</a>
         </nav>
-        <div className="header-actions"><ThemeToggle/><Link href="/customize" className="header-cta" aria-label="Start designing">Start designing <span aria-hidden="true">↗</span></Link></div>
+        <div className="header-actions"><CustomerNav/><ThemeToggle/><Link href="/customize" className="header-cta" aria-label="Start designing">Start designing <span aria-hidden="true">↗</span></Link></div>
       </header>
       <main>{children}</main>
-      <footer className="site-footer"><span>© {new Date().getFullYear()} ML SPORTSWEAR PHILIPPINES</span><span>Custom sportswear, made with your team in mind.</span><Link href="/admin">Staff login</Link></footer>
+      <footer className="site-footer"><span>© {new Date().getFullYear()} ML SPORTSWEAR PHILIPPINES</span><span>Custom sportswear, made with your team in mind.</span><Link href="/privacy">Privacy Notice</Link><Link href="/terms">Terms</Link><Link href="/account">My account</Link><Link href="/admin">Staff login</Link></footer>
     </div>
   </body></html>;
 }
