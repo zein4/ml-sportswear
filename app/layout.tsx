@@ -25,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <div className="header-actions"><CustomerNav/><ThemeToggle/><Link href="/customize" className="header-cta" aria-label="Start designing">Start designing <span aria-hidden="true">↗</span></Link></div>
       </header>
       <main>{children}</main>
-      <footer className="site-footer"><span>© {new Date().getFullYear()} ML SPORTSWEAR PHILIPPINES</span><span>Custom sportswear, made with your team in mind.</span><Link href="/privacy">Privacy Notice</Link><Link href="/terms">Terms</Link><Link href="/account">My account</Link><Link href="/admin">Staff login</Link></footer>
+      <footer className="site-footer"><span>© {new Date().getFullYear()} ML SPORTSWEAR PHILIPPINES</span><span>Custom sportswear, made with your team in mind.</span><Link href="/privacy">Privacy Notice</Link><Link href="/terms">Terms</Link><Link href="/account">My account</Link></footer>
     </div>
   </body></html>;
 }

@@ -493,3 +493,54 @@ textarea:focus-visible, select:focus-visible {
 @media(max-width:440px){.v7-category-grid{grid-template-columns:1fr 1fr;gap:9px}.v7-category-top{font-size:8px;padding:14px 10px 0}.v7-category-art{height:185px;margin:8px 7px 0}.v7-category-art .garment-svg{height:180px}.v7-category-info{gap:5px}.v7-category-go{height:31px;width:31px}.v7-category-info h3{font-size:13px}.v7-category-info p{font-size:9px}.v7-steps-grid{grid-template-columns:1fr}.v7-member-banner{display:flex;flex-direction:column;align-items:flex-start}.v7-hero-content h1{font-size:41px}.v7-auth-wrap{padding:15px 12px 55px}.v7-auth-aside{padding:22px}.v7-auth-card{padding:25px 18px}.v7-shop-strip{grid-template-columns:1fr 1fr}.v7-shop-strip span{font-size:8px}.v7-float-tag{font-size:8px;padding:9px}}
 @media(prefers-reduced-motion:reduce){.v7-category-card,.v7-category-art .garment-svg,.v7-primary-cta{transition:none}}
 .v7-google-button>svg:first-child{height:19px;width:19px;flex-shrink:0}
+
+
+/* V7 small UX update: staff login is visible at the bottom of the buyer sign-in card. */
+.v7-staff-access {
+  margin-top: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px;
+  border: 1px solid var(--outline);
+  border-radius: 14px;
+  background: var(--surface-alt);
+}
+.v7-staff-access-info { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.v7-staff-access-icon {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--blue-tint);
+  color: var(--blue-fg);
+}
+.v7-staff-access-info strong { display: block; color: var(--ink); font-size: 12px; font-weight: 800; }
+.v7-staff-access-info p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.v7-staff-access-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background .18s ease, transform .18s ease;
+}
+.v7-staff-access-button:hover { background: var(--button-hover); transform: translateY(-1px); }
+.v7-staff-access-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 670px) {
+  .v7-staff-access { flex-direction: column; align-items: stretch; }
+  .v7-staff-access-button { width: 100%; }
+}

@@ -148,7 +148,16 @@ export function CustomerAuth({mode}: {mode:Mode}) {
       </form>}
       <p className="auth-card-bottom">{mode==='login'?<>New to ML Sportswear? <Link href="/signup">Create account</Link></>:mode==='signup'?<>Already a member? <Link href="/login">Log in</Link></>:<Link href="/login">Back to login</Link>}</p>
       <p className="v7-auth-legal">By continuing, you acknowledge our <Link href="/privacy">Privacy Notice</Link> and <Link href="/terms">Terms</Link>.</p>
-      <div className="auth-safety"><ShieldCheck size={16}/> Customer accounts are separate from staff-only access.</div>
+      <div className="v7-staff-access" aria-label="Staff and administrator access">
+        <div className="v7-staff-access-info">
+          <span className="v7-staff-access-icon"><ShieldCheck size={19} aria-hidden="true" /></span>
+          <div>
+            <strong>ML Sportswear staff or admin?</strong>
+            <p>Use your authorized staff account. Customer sign-up does not grant admin access.</p>
+          </div>
+        </div>
+        <Link href="/admin" className="v7-staff-access-button">Staff login <ArrowRight size={16} aria-hidden="true" /></Link>
+      </div>
     </section>
   </div></div>;
 }
