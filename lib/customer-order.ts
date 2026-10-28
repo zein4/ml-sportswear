@@ -20,6 +20,8 @@ export async function publicOrderSnapshot(db: NonNullable<ReturnType<typeof supa
   const balance = total === null ? null : Math.max(0,Math.round((total-verified)*100)/100);
   return {
     code:order.code, garment:order.garment,quantity:order.quantity,team_name:order.team_name,
+    player_name:order.player_name, player_number:order.player_number,
+    sizes:order.sizes, color:order.color, accent_color:order.accent_color, print_color:order.print_color,
     status:order.status, quote_notes:order.quote_notes,quoted_total:total,deposit_percent:order.deposit_percent,
     gcash_instructions:order.gcash_instructions,bank_instructions:order.bank_instructions,
     quote_issued_at:order.quote_issued_at,customer_approved_at:order.customer_approved_at,

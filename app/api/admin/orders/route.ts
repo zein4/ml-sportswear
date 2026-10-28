@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin, supabasePublic } from '@/lib/supabase-server';
 import { newAccessToken, trackingLink, moneyRound, PRODUCTION_STATUSES, SHIPPING_STATUSES, verifiedAmount } from '@/lib/workflow';
+import { cancelCodOrder } from '@/lib/cancel-order';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -54,7 +55,12 @@ export async function PATCH(req:Request) {
   const {data:order,error}=await db.from('orders').select('*').eq('id',id).maybeSingle();
   if(error||!order)return bad('Order not found.',404);
   const action=body.action;
+  if (action === 'cancel_checkout') {
+    const result = await cancelCodOrder(db, order, body.reason, body.detail, 'Admin');
+    return result.ok ? NextResponse.json({ok: true}) : bad(result.message, 409);
+  }
   if(action==='fulfillment_checkout') {
+    if(order.status==='cancelled'||order.checkout_status==='cancelled')return bad('Cancelled orders cannot be fulfilled.',409);
     if(!['cod','qrph'].includes(order.checkout_method))return bad('Not a checkout order.',409);
     const prod=asString(body.production_status,30),delivery=asString(body.delivery_status,30),reference=asString(body.delivery_reference,160);
     if(!PRODUCTION_STATUSES.includes(prod as typeof PRODUCTION_STATUSES[number])||!SHIPPING_STATUSES.includes(delivery as typeof SHIPPING_STATUSES[number]))return bad('Invalid production / delivery status.',400);
@@ -64,8 +70,11 @@ export async function PATCH(req:Request) {
     if(order.checkout_method==='cod'&&delivery==='delivered'&&order.checkout_status==='cod_pending'&&body.cod_collected!==true)return bad('Confirm cash was actually collected before completing COD.',409);
     const update:Record<string,unknown>={production_status:prod,delivery_status:delivery,delivery_reference:reference,status:delivery==='delivered'?'completed':prod==='not_started'?'approved':'in_production'};
     if(order.checkout_method==='cod'&&delivery==='delivered'&&order.checkout_status==='cod_pending'){update.checkout_status='cod_collected';update.paid_at=new Date().toISOString();}
-    const {error:saveError}=await db.from('orders').update(update).eq('id',id);
-    return saveError?bad('Unable to save progress.',500):NextResponse.json({ok:true});
+    const {data:changed,error:saveError}=await db.from('orders').update(update).eq('id',id)
+      .eq('checkout_status',order.checkout_status).eq('production_status',order.production_status)
+      .eq('delivery_status',order.delivery_status).neq('status','cancelled')
+      .select('id').maybeSingle();
+    return saveError||!changed?bad('Order changed while you were editing. Refresh before saving progress.',409):NextResponse.json({ok:true});
   }
   if(action==='tracking_link') {
     if(order.tracking_token_hash && body.confirmRotate !== true)return bad('Confirm rotation before replacing a private customer link.',409);
