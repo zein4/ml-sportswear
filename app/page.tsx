@@ -24,12 +24,17 @@ export default function Home() {
     <section id="collection" className="collection-section"><div className="section-kicker">WHAT WILL YOU MAKE?</div><div className="section-heading"><h2>Start with a blank canvas.</h2><p>Pick the piece. We’ll help you make it yours.</p></div><div className="collection-grid">
       {categories.map((c) => <Link href={`/customize?garment=${c.kind}`} className="category-card" key={c.number}><div className="category-card-top"><span>{c.number} / COLLECTION</span><ArrowUpRight size={19}/></div><div className="category-preview"><GarmentPreview garment={c.kind} color={c.color} accentColor="#f3f1e9" printColor="#f3f1e9" playerName="TEAM" playerNumber="10" teamName="ML TEAM" view="front" mini/></div><div className="category-bottom"><div><h3>{c.title}</h3><p>{c.caption}</p></div><span className="category-arrow">↗</span></div></Link>)}
     </div></section>
-    <section id="how-it-works" className="how-section"><div><div className="section-kicker">NO COMPLICATED PROCESS</div><h2>Made simple.<br/>Made yours.</h2><p>Create your vision first. We’ll discuss the final details before production.</p><Link href="/customize" className="button button-light">Design now <ArrowUpRight size={18}/></Link></div><div className="how-steps">
-      <div><span className="how-icon"><Shirt size={23}/></span><span>01</span><h3>Choose your garment</h3><p>Pick sando, T-shirt, shorts, or a jersey set.</p></div>
-      <div><span className="how-icon"><Palette size={23}/></span><span>02</span><h3>Personalize every detail</h3><p>Colors, logos, names, numbers, and sizes.</p></div>
-      <div><span className="how-icon"><FileUp size={23}/></span><span>03</span><h3>Review your design</h3><p>Switch between front and back previews.</p></div>
-      <div><span className="how-icon"><ClipboardCheck size={23}/></span><span>04</span><h3>Request your quote</h3><p>ML Sportswear can review and confirm your order.</p></div>
+    <section id="how-it-works" className="how-section how-seven"><div><div className="section-kicker">FROM DESIGN TO DELIVERY</div><h2>Seven simple<br/>steps.</h2><p>Personalize first. ML Sportswear confirms the quote before you approve and pay. Follow the order from production through delivery.</p><Link href="/customize" className="button button-light">Start designing <ArrowUpRight size={18}/></Link><Link href="/track" className="how-track-link">Already ordered? Track it ↗</Link></div><div className="how-steps">
+      {[
+        ['01','Design & request','Choose colors, upload designs, then submit a request.'],
+        ['02','Staff reviews','The business confirms the final quotation.'],
+        ['03','Approve quotation','Review and accept the final price and terms.'],
+        ['04','Choose payment','Select GCash or bank transfer, deposit or full.'],
+        ['05','Submit proof','Transfer funds manually and upload payment proof.'],
+        ['06','Staff verifies','Payment is checked before production begins.'],
+        ['07','Track progress','Follow production, pickup or delivery updates.'],
+      ].map(([n,title,copy])=><div key={n}><span className="how-icon"><ClipboardCheck size={23}/></span><span>{n}</span><h3>{title}</h3><p>{copy}</p></div>)}
     </div></section>
-    <section className="bottom-banner"><div><div className="section-kicker">READY TO CREATE?</div><h2>Your team deserves<br/>a look of its own.</h2></div><Link href="/customize" className="button button-dark">Customize your sportswear <ArrowUpRight size={18}/></Link></section>
+        <section className="bottom-banner"><div><div className="section-kicker">READY TO CREATE?</div><h2>Your team deserves<br/>a look of its own.</h2></div><Link href="/customize" className="button button-dark">Customize your sportswear <ArrowUpRight size={18}/></Link></section>
   </>;
 }

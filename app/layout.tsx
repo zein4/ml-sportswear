@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning><head>
+  return <html lang="en" suppressHydrationWarning><head><meta name="referrer" content="no-referrer" />
     <script dangerouslySetInnerHTML={{ __html: `(function(){try{var saved=localStorage.getItem('ml-sportswear-theme');var theme=(saved==='light'||saved==='dark')?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch(e){document.documentElement.dataset.theme='light';}})();` }} />
   </head><body>
     <div className="site-shell">
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <span className="brand-word">SPORTSWEAR <small>PHILIPPINES</small></span>
         </Link>
         <nav className="site-nav" aria-label="Main navigation">
-          <Link href="/">Home</Link><Link href="/customize">Customize</Link><a href="/#how-it-works">How it works</a>
+          <Link href="/">Home</Link><Link href="/customize">Customize</Link><Link href="/track">Track order</Link><a href="/#how-it-works">How it works</a>
         </nav>
         <div className="header-actions"><ThemeToggle/><Link href="/customize" className="header-cta" aria-label="Start designing">Start designing <span aria-hidden="true">↗</span></Link></div>
       </header>

@@ -1,3 +1,5 @@
+# This is the old V2 update guide. For this version, follow UPGRADE-TO-V3.md instead.
+
 # ML Sportswear V2 – Repair + Drag/Resize Editor
 
 ## Replace your old project safely (Windows)

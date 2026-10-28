@@ -120,7 +120,7 @@ export default function CustomizePage() {
       const response = await fetch('/api/orders', { method: 'POST', body: fd });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not submit your request.');
-      window.location.assign(`/success?code=${encodeURIComponent(result.code)}`);
+      window.location.assign(`/success#code=${encodeURIComponent(result.code)}&token=${encodeURIComponent(result.trackingToken)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
       setSending(false);

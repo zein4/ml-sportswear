@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { newAccessToken } from '@/lib/workflow';
 import { NextResponse } from 'next/server';
 import { validateOrder } from '@/lib/validation';
 import { supabaseAdmin } from '@/lib/supabase-server';
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
       if (file !== null && (!(file instanceof File) || !FILE_TYPES[file.type] || file.size > MAX_FILE || file.size === 0)) return invalid('Design files must be PNG, JPG, or WebP, 4 MB or less.');
     }
     const id = randomUUID();
+    const access = newAccessToken();
     const code = 'ML-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + id.slice(0,8).toUpperCase();
     const uploads: string[] = [];
     async function upload(file: FormDataEntryValue | null, side: 'front'|'back') {
@@ -47,14 +49,14 @@ export async function POST(request: Request) {
       player_name:d.playerName, player_number:d.playerNumber, team_name:d.teamName,
       sizes:d.sizes, quantity:checked.quantity, roster:d.roster, notes:d.notes,
       contact_name:d.contactName, email:d.email, phone:d.phone, organization:d.organization,
-      estimated_total:checked.total, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:'new',
+      estimated_total:checked.total, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:'new', tracking_token_hash:access.hash,
     });
     if (error) {
       if (uploads.length) await supabase.storage.from('design-uploads').remove(uploads);
       console.error('Order database error:', error.message);
       return invalid('The request could not be saved. Please try again.', 500);
     }
-    return NextResponse.json({code},{status:201});
+    return NextResponse.json({code, trackingToken:access.token},{status:201});
   } catch(e) {
     console.error('Order submission failure:',e);
     return invalid('Unable to send request. Please verify the Supabase setup, storage bucket and file sizes.',500);

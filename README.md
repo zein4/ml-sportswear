@@ -1,3 +1,11 @@
+# ML Sportswear V3 — Quotation, Manual Payments & Tracking
+
+**New version:** Read [UPGRADE-TO-V3.md](UPGRADE-TO-V3.md) first. It contains the Supabase migration and Windows VS Code update instructions. The V2 customizer remains included. `OFFLINE-DEMO-V2-ONLY.html` is a legacy design preview, not the V3 customer/payment flow.
+
+Manual payments require actual business instructions and staff verification. The customer tracking link is a secret. No online payment gateway is connected.
+
+---
+
 # ML Sportswear Philippines – Website + Order Management
 
 **Stack:** Next.js (App Router, TypeScript), Supabase (PostgreSQL, Authentication, private Storage), Vercel (hosting).

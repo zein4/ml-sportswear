@@ -1,3 +1,19 @@
+ML Sportswear V3 — Full seven-step customer workflow
+
+READ UPGRADE-TO-V3.md FIRST.
+
+1. BACK UP your existing VS Code project and keep .env.local and .git safe.
+2. Update the source files from this ZIP in the existing Git project folder.
+3. Run supabase/UPGRADE-V3.sql in your CURRENT Supabase project.
+4. npm.cmd install ; npm.cmd run build ; npm.cmd run dev
+5. Test /customize, /track, and /admin.
+6. When tested, push to GitHub for Vercel automatic deployment.
+
+No live payment collection is implemented. Payment receipt upload + admin verification only.
+Do not publish real account numbers or private tracking links publicly.
+
+---
+
 ML SPORTSWEAR PHILIPPINES - START HERE
 
 WHAT'S INSIDE
