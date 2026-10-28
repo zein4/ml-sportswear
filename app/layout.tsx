@@ -5,7 +5,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: 'ML Sportswear | Made for your team',
-  description: 'Customize sando, jerseys, shirts and shorts. Preview your design and request a quotation.',
+  description: 'Customize sando, jerseys, shirts and shorts. Preview your design, check out with GCash QR or COD, and track delivery.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

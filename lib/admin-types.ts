@@ -6,5 +6,6 @@ export type StaffOrder={
   front_design_url?:string|null;back_design_url?:string|null;artwork_layout?:Record<string,{x:number;y:number;scale:number}>;
   has_tracking_link:boolean;quoted_total:number|null;deposit_percent:number;quote_notes:string;gcash_instructions:string;bank_instructions:string;
   quote_issued_at:string|null;customer_approved_at:string|null;production_status:string;delivery_status:string;delivery_reference:string;
+  checkout_method?:string|null;checkout_status?:string;delivery_address?:string;paid_at?:string|null;
   payments:StaffPayment[];
 };

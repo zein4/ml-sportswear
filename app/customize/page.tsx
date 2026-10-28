@@ -49,6 +49,8 @@ export default function CustomizePage() {
   const [phone, setPhone] = useState('');
   const [organization, setOrganization] = useState('');
   const [website, setWebsite] = useState('');
+  const [checkoutMethod,setCheckoutMethod]=useState<'cod'|'qrph'>('cod');
+  const [deliveryAddress,setDeliveryAddress]=useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
@@ -113,14 +115,16 @@ export default function CustomizePage() {
     if (totalPieces < 1 || totalPieces > 100) { setError('Please choose 1 to 100 items.'); return; }
     setSending(true); setError('');
     try {
-      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout };
+      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout, checkoutMethod, deliveryAddress };
       const fd = new FormData(); fd.append('payload', JSON.stringify(payload));
       if (frontFile) fd.append('frontDesign', frontFile);
       if (backFile) fd.append('backDesign', backFile);
       const response = await fetch('/api/orders', { method: 'POST', body: fd });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not submit your request.');
-      window.location.assign(`/success#code=${encodeURIComponent(result.code)}&token=${encodeURIComponent(result.trackingToken)}`);
+      try{sessionStorage.setItem('ml-checkout-order',JSON.stringify({code:result.code,token:result.trackingToken,method:checkoutMethod}));}catch{}
+      if (result.checkoutUrl) window.location.assign(result.checkoutUrl);
+      else window.location.assign(`/success#code=${encodeURIComponent(result.code)}&token=${encodeURIComponent(result.trackingToken)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
       setSending(false);
@@ -128,7 +132,7 @@ export default function CustomizePage() {
   };
 
   return <div className="customizer-wrap">
-    <div className="customizer-head"><div><span className="section-kicker">ML DESIGN STUDIO / CUSTOMIZER</span><h1>Create something <em>yours.</em></h1><p>Make it yours, one detail at a time. Preview your look, then send it for a quotation.</p></div><div className="step-counter">{review ? '02' : '01'} <span>/ 02</span><small>{review ? 'SEND REQUEST' : 'DESIGN YOUR KIT'}</small></div></div>
+    <div className="customizer-head"><div><span className="section-kicker">ML DESIGN STUDIO / CUSTOMIZER</span><h1>Create something <em>yours.</em></h1><p>Make your design, choose GCash QR or Cash on Delivery, and place your order.</p></div><div className="step-counter">{review ? '02' : '01'} <span>/ 02</span><small>{review ? 'CHECKOUT' : 'DESIGN YOUR KIT'}</small></div></div>
     <div className="studio-progress"><span className="progress-active"/><span className={review ? 'progress-active' : ''}/></div>
     <div className="studio-layout">
       <div className="studio-controls">
@@ -151,18 +155,23 @@ export default function CustomizePage() {
             <label className="form-field" style={{marginTop:20}}><span>Team roster <small>(optional)</small></span><textarea rows={3} maxLength={4500} placeholder={'For different names and numbers, add one player per line.\nExample: DELA CRUZ - 10 - M\nSANTOS - 21 - L'} value={roster} onChange={e => setRoster(e.target.value)}/></label>
             <label className="form-field" style={{marginTop:14}}><span>Special instructions <small>(optional)</small></span><textarea rows={3} maxLength={1500} placeholder="Tell us about deadlines, logo positioning, or other requests." value={notes} onChange={e=>setNotes(e.target.value)}/></label>
           </section>
-          <button type="button" className="button button-dark next-button" disabled={totalPieces<1||totalPieces>100} onClick={() => { setError(''); setReview(true); window.scrollTo({top:0, behavior:'smooth'}); }}>Review & request quotation <ArrowRight size={18}/></button>
+          <button type="button" className="button button-dark next-button" disabled={totalPieces<1||totalPieces>100} onClick={() => { setError(''); setReview(true); window.scrollTo({top:0, behavior:'smooth'}); }}>Continue to checkout <ArrowRight size={18}/></button>
         </> : <section className="control-section review-section"><button type="button" className="back-link" onClick={() => {setReview(false); setError('');}}><ArrowLeft size={16}/> Back to customization</button>
-          <div className="control-title"><span className="step-num">05</span><div><h2>Ready to request?</h2><p>Enter your contact details so ML Sportswear can reach you.</p></div></div>
-          <div className="review-details"><div><span>Garment</span><strong>{selected.label}</strong></div><div><span>Main color</span><strong>{PALETTE.find(c=>c.hex===color)?.name}</strong></div><div><span>Total pieces</span><strong>{totalPieces}</strong></div><div><span>Demo price estimate</span><strong>{money(estimate)}</strong></div></div>
+          <div className="control-title"><span className="step-num">05</span><div><h2>Checkout</h2><p>Add your delivery address and choose how to pay.</p></div></div>
+          <div className="review-details"><div><span>Garment</span><strong>{selected.label}</strong></div><div><span>Main color</span><strong>{PALETTE.find(c=>c.hex===color)?.name}</strong></div><div><span>Total pieces</span><strong>{totalPieces}</strong></div><div><span>Item subtotal (confirm shop rates)</span><strong>{money(estimate)}</strong></div></div>
           <form onSubmit={submit} className="contact-form"><label className="form-field"><span>Full name *</span><input required minLength={2} maxLength={120} placeholder="Your full name" value={contactName} onChange={e => setContactName(e.target.value)}/></label>
             <div className="form-grid"><label className="form-field"><span>Email address *</span><input required type="email" maxLength={200} placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}/></label><label className="form-field"><span>Phone number *</span><input required type="tel" minLength={7} maxLength={30} placeholder="09XX XXX XXXX" value={phone} onChange={e => setPhone(e.target.value)}/></label></div>
             <label className="form-field"><span>Organization / team <small>(optional)</small></span><input maxLength={120} placeholder="School, team, or organization" value={organization} onChange={e => setOrganization(e.target.value)}/></label>
+            <label className="form-field"><span>Delivery address *</span><textarea required minLength={12} maxLength={500} rows={3} placeholder="House / street, barangay, city, province, postal code" value={deliveryAddress} onChange={e=>setDeliveryAddress(e.target.value)}/></label>
+            <div className="checkout-methods" role="radiogroup" aria-label="Payment method">
+              <button type="button" role="radio" aria-checked={checkoutMethod==='qrph'} className={'checkout-choice'+(checkoutMethod==='qrph'?' selected':'')} onClick={()=>setCheckoutMethod('qrph')}><strong>GCash / QR Ph</strong><small>Scan a QR or pay securely in GCash. The payment provider confirms automatically.</small></button>
+              <button type="button" role="radio" aria-checked={checkoutMethod==='cod'} className={'checkout-choice'+(checkoutMethod==='cod'?' selected':'')} onClick={()=>setCheckoutMethod('cod')}><strong>Cash on Delivery</strong><small>Place your order now. Pay cash when your items arrive.</small></button>
+            </div>
             <label className="hidden-honeypot" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)}/></label>
-            <p className="privacy-note"><ShieldCheck size={17}/> We use your information to respond to this quotation request. Please do not include sensitive personal information in your notes.</p>
+            <p className="privacy-note"><ShieldCheck size={17}/> Your contact and delivery details are used to fulfill this order. Please do not include sensitive information in design notes.</p>
             {error && <div className="request-error" role="alert">{error}</div>}
-            <button className="button button-dark next-button" type="submit" disabled={sending||totalPieces<1||totalPieces>100}>{sending ? 'Sending request…' : 'Submit quotation request'} <ArrowRight size={18}/></button>
-            <div className="hint"><Info size={16}/> No payment will be collected. Final price and product details are subject to confirmation by ML Sportswear.</div>
+            <button className="button button-dark next-button" type="submit" disabled={sending||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
+            <div className="hint"><Info size={16}/> Pricing shown is still a demo until ML Sportswear confirms actual rates. QR payment only activates when the shop configures PayMongo. COD does not collect money online.</div>
           </form>
         </section>}
       </div>

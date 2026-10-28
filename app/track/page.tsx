@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, ClipboardList, CreditCard, Factory, FileCheck
 import { money } from '@/lib/catalog';
 
 type Payment = { id:string;stage:string;payment_option:string;method:string;expected_amount:number;status:string;created_at:string };
-type CustomerOrder = {code:string;garment:string;quantity:number;team_name:string;status:string;quote_notes:string;quoted_total:number|null;deposit_percent:number;gcash_instructions:string;bank_instructions:string;quote_issued_at:string|null;customer_approved_at:string|null;production_status:string;delivery_status:string;delivery_reference:string;verified_amount:number;balance:number|null;payments:Payment[]};
+type CustomerOrder = {code:string;garment:string;quantity:number;team_name:string;status:string;quote_notes:string;quoted_total:number|null;deposit_percent:number;gcash_instructions:string;bank_instructions:string;quote_issued_at:string|null;customer_approved_at:string|null;production_status:string;delivery_status:string;delivery_reference:string;verified_amount:number;balance:number|null;payments:Payment[];checkout_method?:string|null;checkout_status?:string;checkout_url?:string|null;delivery_address?:string;paid_at?:string|null};
 const stages=[
   ['Design submitted','Your customization request was received.'],
   ['Quote prepared','Staff reviews your design and sets the final price.'],
@@ -53,8 +53,27 @@ export default function TrackPage() {
   const remaining=Math.max(0,Math.round((total-paid)*100)/100);
   const due=verifiedFirst||option==='full'?remaining:Math.min(remaining,Math.round(total*Number(order?.deposit_percent||50))/100);
   const selectedInstructions=method==='gcash'?order?.gcash_instructions:order?.bank_instructions;
+  async function continueCheckout(){
+    if(!order)return;
+    setBusy(true);setError('');
+    try{const res=await fetch('/api/customer/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,token})});const j=await res.json();if(!res.ok||!j.checkoutUrl)throw Error(j.error||'Payment page unavailable.');try{sessionStorage.setItem('ml-checkout-order',JSON.stringify({code,token,method:'qrph'}));}catch{}window.location.assign(j.checkoutUrl);}catch(e){setError(e instanceof Error?e.message:'Could not open GCash checkout.');setBusy(false);}
+  }
   const approved=Boolean(order?.customer_approved_at);
   const activeStep=order?.delivery_status==='delivered'?7:order?.production_status!=='not_started'?7:paid>0?6:pending?5:approved?3:order?.status==='quoted'?2:1;
+  if(order?.checkout_method) {
+    const cod=order.checkout_method==='cod', paid=order.checkout_status==='paid'||order.checkout_status==='cod_collected';
+    const steps=[['Order placed',true],['Payment',paid],['In production',order.production_status==='in_production'||order.production_status==='ready'],['Ready to deliver',order.delivery_status==='ready_for_pickup'||order.delivery_status==='shipped'||order.delivery_status==='delivered'],['Delivered',order.delivery_status==='delivered']] as const;
+    return <main className="track-page"><div className="track-intro"><span className="section-kicker">ML SPORTSWEAR / TRACKING</span><h1>Your order.</h1><p>Simple checkout. Follow production and delivery here.</p></div>
+      <section className="customer-card"><div className="track-card-heading"><div><span className="section-kicker">ORDER</span><h2>{order.code}</h2><p>{order.quantity} piece(s) · {order.garment}</p></div><button className="small-button" disabled={busy} onClick={()=>void load(code,token)}><RefreshCw size={14}/> Refresh</button></div>
+      <div className="tracking-milestones">{steps.map(([name,complete])=><p key={name}>{complete?<CheckCircle2 size={16}/>:<ClipboardList size={16}/>} {name} {complete?'✓':''}</p>)}</div>
+      <div className="track-status-grid"><div><small>Order amount</small><b>{money(Number(order.quoted_total||0))}</b></div><div><small>Payment</small><b>{cod?(paid?'COD received':'Cash on Delivery'):(paid?'Paid':'Awaiting GCash payment')}</b></div><div><small>Delivery</small><b>{order.delivery_status.replaceAll('_',' ')}</b></div></div>
+      {order.delivery_reference&&<p className="hint">Delivery details: {order.delivery_reference}</p>}
+      {order.delivery_address&&<p className="hint">Shipping to: {order.delivery_address}</p>}
+      {!cod&&!paid&&<div className="checkout-pay-box"><p><strong>GCash / QR Ph payment</strong></p><p>Choose GCash or scan a QR through secure PayMongo checkout. Your payment status updates after the provider confirms it.</p><button type="button" className="button button-dark" disabled={busy} onClick={()=>void continueCheckout()}>Pay with GCash / QR Ph <ArrowRight size={17}/></button></div>}
+      {cod&&!paid&&<p className="workflow-success">Your order is placed. Please prepare cash for delivery. No payment or receipt upload is needed now.</p>}
+      {!cod&&paid&&<p className="workflow-success"><ShieldCheck size={17}/> Payment confirmed by provider.</p>}
+      </section>{error&&<div className="request-error">{error}</div>}<p className="hint">Save this private tracking link. Only share it with the shop.</p></main>;
+  }
   return <main className="track-page"><div className="track-intro"><span className="section-kicker">ML SPORTSWEAR / CUSTOMER PORTAL</span><h1>Track your <em>order.</em></h1><p>Approve the final quote, submit payment proof, then follow production and delivery using your private link.</p></div>
     {!order&&<section className="customer-card"><h2><ShieldCheck size={22}/> Open your private tracking link</h2><p>Use the link shown after you submitted your request, or enter the reference and private access key here.</p><form onSubmit={access} className="track-access"><label>Order reference<input value={manualCode} onChange={e=>setManualCode(e.target.value)} placeholder="ML-20261026-XXXXXXXX" required/></label><label>Private access key<input value={manualToken} onChange={e=>setManualToken(e.target.value)} placeholder="64-character private key" required/></label><button className="button button-dark" disabled={busy}>Open order <ArrowRight size={17}/></button></form></section>}
     {order&&<>

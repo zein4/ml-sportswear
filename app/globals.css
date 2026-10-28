@@ -331,3 +331,13 @@ textarea:focus-visible, select:focus-visible {
 .admin-table pre { font-size:10px;white-space:pre-wrap;overflow-wrap:anywhere; }
 @media(max-width:990px){.track-timeline { grid-template-columns:repeat(2,minmax(0,1fr)); }.workflow-admin-grid {grid-template-columns:1fr;} .how-seven{grid-template-columns:1fr;} }
 @media(max-width:650px){.track-timeline,.tracking-milestones { grid-template-columns:1fr; }.payment-controls,.workflow-form-grid,.track-status-grid {grid-template-columns:1fr;} .track-page{padding-top:35px;} .customer-card{padding:18px;} .workflow-admin{padding:12px;} .track-price strong,.payment-due strong{font-size:19px;} .payment-records>div{flex-direction:column;} }
+
+/* V4 straightforward checkout */
+.checkout-methods{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:18px 0}
+.checkout-choice{cursor:pointer;text-align:left;border:1px solid var(--line);background:var(--surface-alt);border-radius:11px;padding:18px;min-height:115px;color:var(--ink)}
+.checkout-choice.selected{border:2px solid var(--blue);padding:17px;background:var(--blue-tint)}
+.checkout-choice strong{display:block;margin-bottom:9px;font-size:14px}.checkout-choice small{font-size:11px;line-height:1.6;display:block;color:var(--muted)}
+.checkout-pay-box{padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--surface-alt);margin:20px 0}.checkout-pay-box p{color:var(--ink)}
+.cod-collection{display:flex;align-items:center;gap:10px;padding:12px;margin:14px 0;background:var(--surface-alt);border-radius:8px}
+.cod-collection input{width:19px;height:19px}
+@media(max-width:680px){.checkout-methods{grid-template-columns:1fr}}

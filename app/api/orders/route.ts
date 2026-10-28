@@ -3,6 +3,7 @@ import { newAccessToken } from '@/lib/workflow';
 import { NextResponse } from 'next/server';
 import { validateOrder } from '@/lib/validation';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { confirmedPricing, paymongoReady, createCheckoutSession } from '@/lib/paymongo';
 
 export const runtime = 'nodejs';
 const MAX_FILE = 4 * 1024 * 1024;
@@ -20,6 +21,9 @@ export async function POST(request: Request) {
     try { parsed = JSON.parse(text); } catch { return invalid('Invalid order JSON.'); }
     const checked = validateOrder(parsed);
     if (!checked.data) return invalid(checked.error || 'Invalid details.');
+    const {checkoutMethod,deliveryAddress}=checked.data;
+    if (checkoutMethod && process.env.NODE_ENV==='production' && !confirmedPricing()) return invalid('Checkout is not open until ML Sportswear confirms the actual price list.',503);
+    if(checkoutMethod==='qrph'&&!paymongoReady())return invalid('GCash checkout is not enabled yet. Choose Cash on Delivery or ask the shop to enable PayMongo.',503);
     const front = form.get('frontDesign');
     const back = form.get('backDesign');
     for (const file of [front, back]) {
@@ -49,12 +53,21 @@ export async function POST(request: Request) {
       player_name:d.playerName, player_number:d.playerNumber, team_name:d.teamName,
       sizes:d.sizes, quantity:checked.quantity, roster:d.roster, notes:d.notes,
       contact_name:d.contactName, email:d.email, phone:d.phone, organization:d.organization,
-      estimated_total:checked.total, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:'new', tracking_token_hash:access.hash,
+      estimated_total:checked.total, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:checkoutMethod?'approved':'new', tracking_token_hash:access.hash,
+      ...(checkoutMethod?{quoted_total:checked.total,checkout_method:checkoutMethod,checkout_status:checkoutMethod==='cod'?'cod_pending':'awaiting_payment',delivery_address:deliveryAddress}:{}),
     });
     if (error) {
       if (uploads.length) await supabase.storage.from('design-uploads').remove(uploads);
       console.error('Order database error:', error.message);
       return invalid('The request could not be saved. Please try again.', 500);
+    }
+    if (checkoutMethod==='qrph') {
+      try {
+        const session=await createCheckoutSession({code,amount:checked.total!,garment:d.garment,quantity:checked.quantity!,origin:new URL(request.url).origin});
+        const {error:sessionError}=await supabase.from('orders').update({paymongo_checkout_id:session.id,paymongo_checkout_url:session.url}).eq('id',id).eq('checkout_status','awaiting_payment');
+        if(sessionError){console.error('Could not save checkout session',sessionError.message);return invalid('Order saved but GCash checkout could not be prepared. Open your private order link to retry.',500);}
+        return NextResponse.json({code,trackingToken:access.token,checkoutUrl:session.url},{status:201});
+      }catch(e){ console.error('Checkout setup error',e);return NextResponse.json({code,trackingToken:access.token,checkoutError:'Order saved but payment page is temporarily unavailable. Use your tracking link to try again.'},{status:201}); }
     }
     return NextResponse.json({code, trackingToken:access.token},{status:201});
   } catch(e) {

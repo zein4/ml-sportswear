@@ -26,5 +26,8 @@ export async function publicOrderSnapshot(db: NonNullable<ReturnType<typeof supa
     production_status:order.production_status,delivery_status:order.delivery_status,
     delivery_reference:order.delivery_reference,verified_amount:Math.round(verified*100)/100,
     balance,payments:payments||[],
+    checkout_method:order.checkout_method||null, checkout_status:order.checkout_status||'legacy',
+    delivery_address:order.delivery_address||'', paid_at:order.paid_at||null,
+    checkout_url:order.paymongo_checkout_url||null,
   };
 }

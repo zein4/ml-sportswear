@@ -18,6 +18,8 @@ export type OrderPayload = {
   organization: string;
   website: string; // honeypot: must be empty
   artworkLayout: ArtworkLayout;
+  checkoutMethod: "cod" | "qrph" | null;
+  deliveryAddress: string;
 };
 
 const asText = (x: unknown, len: number) => typeof x === 'string' ? x.trim().slice(0, len) : '';
@@ -48,6 +50,9 @@ export function validateOrder(raw: unknown): { data?: OrderPayload; error?: stri
   if (contactName.length < 2) return { error: 'Please enter your full name.' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Please enter a valid email address.' };
   if (!/^[+\d\s()-]{7,30}$/.test(phone)) return { error: 'Please enter a valid contact number.' };
+  const checkoutMethod = obj.checkoutMethod === 'cod' || obj.checkoutMethod === 'qrph' ? obj.checkoutMethod : null;
+  const deliveryAddress = asText(obj.deliveryAddress, 500);
+  if (checkoutMethod && deliveryAddress.length < 12) return {error:'Enter a complete delivery address for checkout.'};
   const data: OrderPayload = {
     garment, color, accentColor, printColor,
     playerName: asText(obj.playerName, 24),
@@ -55,7 +60,7 @@ export function validateOrder(raw: unknown): { data?: OrderPayload; error?: stri
     teamName: asText(obj.teamName, 32),
     sizes, roster: asText(obj.roster, 4500), notes: asText(obj.notes, 1500),
     contactName, email, phone, organization: asText(obj.organization, 120), website: '',
-    artworkLayout: sanitizeArtworkLayout(obj.artworkLayout),
+    artworkLayout: sanitizeArtworkLayout(obj.artworkLayout), checkoutMethod, deliveryAddress,
   };
   if (data.playerNumber && !/^\d{1,4}$/.test(data.playerNumber)) return { error: 'Jersey number must contain 1 to 4 digits.' };
   return { data, quantity, total: quantity * garmentInfo.price };
