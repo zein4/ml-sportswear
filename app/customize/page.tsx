@@ -7,6 +7,8 @@ import { GarmentPreview } from '@/components/GarmentPreview';
 import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import type { LivePrices } from '@/lib/garment-prices';
+import {itemTotal,lowestPrice} from '@/lib/garment-prices';
+import '../patch10-aesthetic.css';
 
 const starter = { garment: 'sando' as GarmentId, color: '#3157c9', accentColor: '#f3f1e9', printColor: '#f3f1e9', playerName: 'DELA CRUZ', playerNumber: '10', teamName: 'YOUR TEAM' };
 
@@ -60,10 +62,20 @@ export default function CustomizePage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get('garment');
-    if (GARMENTS.some(g => g.id === param)) {
-      setGarment(param as GarmentId);
-      setArtworkLayout(initialArtworkForGarment(param as GarmentId));
+    const params = new URLSearchParams(window.location.search);
+    const garmentParam = params.get('garment');
+    const colorParam = params.get('color');
+    const sizeParam = params.get('size');
+    if (GARMENTS.some(g => g.id === garmentParam)) {
+      setGarment(garmentParam as GarmentId);
+      setArtworkLayout(initialArtworkForGarment(garmentParam as GarmentId));
+    }
+    // Only allow palette colors and ML's own lookbook shades.
+    if (PALETTE.some(c => c.hex.toLowerCase() === colorParam?.toLowerCase()) || ['#6446bc','#252b47','#9b314f','#276b71','#f3efe8','#b4a7d8'].includes(colorParam?.toLowerCase() || '')) {
+      setColor(colorParam!);
+    }
+    if (SIZES.some(s => s === sizeParam)) {
+      setSizes({ ...initialSizes, M: 0, [sizeParam as Size]: 1 });
     }
   }, []);
   useEffect(() => {
@@ -103,8 +115,9 @@ export default function CustomizePage() {
 
   const selected = GARMENTS.find(x => x.id === garment)!;
   const totalPieces = useMemo(() => Object.values(sizes).reduce((a,b) => a+b, 0), [sizes]);
-  const unitPrice = livePrices?.[garment] ?? null;
-  const estimate = (unitPrice ?? 0) * totalPieces;
+  const estimate = livePrices ? itemTotal(livePrices,garment,sizes) : null;
+  const priceReady = estimate !== null;
+  const fromPrice = livePrices ? lowestPrice(livePrices,garment) : null;
   const updateSize = (size: Size, diff: number) => setSizes(prev => ({...prev, [size]: Math.max(0, Math.min(100, prev[size] + diff))}));
   const preview = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, frontImage, backImage, view };
   const frontLayers: {key:ArtworkKey;label:string}[] = [
@@ -143,10 +156,10 @@ export default function CustomizePage() {
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (totalPieces < 1 || totalPieces > 100) { setError('Please choose 1 to 100 items.'); return; }
-    if(unitPrice===null){setError('Official prices have not loaded. Please refresh and try again.');return;}
+    if(!priceReady){setError('Official size prices have not loaded. Please refresh and try again.');return;}
     setSending(true); setError('');
     try {
-      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout, checkoutMethod, deliveryAddress, displayedUnitPrice:unitPrice };
+      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout, checkoutMethod, deliveryAddress, displayedTotal:estimate };
       const fd = new FormData(); fd.append('payload', JSON.stringify(payload));
       if (frontFile) fd.append('frontDesign', frontFile);
       if (backFile) fd.append('backDesign', backFile);
@@ -172,7 +185,7 @@ export default function CustomizePage() {
       <div className="studio-controls">
         {!review ? <>
           <section className="control-section"><div className="control-title"><span className="step-num">01</span><div><h2>Choose your garment</h2><p>Start with the piece you want to customize.</p></div></div>
-            <div className="garment-options">{GARMENTS.map(g => <button key={g.id} type="button" className={'garment-option' + (g.id===garment?' selected':'')} onClick={() => changeGarment(g.id)}><span className="option-number">{g.code}</span><strong>{g.label}</strong><small>{g.descriptor}</small><small style={{marginTop:8,fontWeight:800,color:"var(--blue)"}}>{livePrices ? money(livePrices[g.id]) + " / piece" : "Price pending"}</small>{g.id===garment && <Check size={16} className="selected-check"/>}</button>)}</div>
+            <div className="garment-options">{GARMENTS.map(g => <button key={g.id} type="button" className={'garment-option' + (g.id===garment?' selected':'')} onClick={() => changeGarment(g.id)}><span className="option-number">{g.code}</span><strong>{g.label}</strong><small>{g.descriptor}</small><small style={{marginTop:8,fontWeight:800,color:"var(--blue)"}}>{livePrices && lowestPrice(livePrices,g.id)!==null ? 'From ' + money(lowestPrice(livePrices,g.id)!) : 'Price pending'}</small>{g.id===garment && <Check size={16} className="selected-check"/>}</button>)}</div>
           </section>
           <section className="control-section"><div className="control-title"><span className="step-num">02</span><div><h2>Find your colors</h2><p>Pick the base color and finishing details.</p></div></div>
             <ColorField title="Main garment color" value={color} onChange={setColor}/>
@@ -185,14 +198,14 @@ export default function CustomizePage() {
             <div className="hint"><Info size={16}/> Drag artwork on the live preview. Select it to resize using the bottom-right handle. You can also fine-tune placement with the editor buttons.</div>
           </section>
           <section className="control-section"><div className="control-title"><span className="step-num">04</span><div><h2>Sizes & quantity</h2><p>Add the number of pieces needed in each size.</p></div></div>
-            <div className="sizes-grid">{SIZES.map(size => <div className="size-counter" key={size}><span>{size}</span><div><button type="button" onClick={() => updateSize(size,-1)} aria-label={`Remove one ${size}`}><Minus size={14}/></button><strong>{sizes[size]}</strong><button type="button" onClick={() => updateSize(size,1)} aria-label={`Add one ${size}`}><Plus size={14}/></button></div></div>)}</div>
+            <div className="sizes-grid">{SIZES.map(size => <div className="size-counter" key={size}><span>{size}<small style={{display:'block',opacity:.8,fontSize:10,marginTop:4}}>{livePrices?.[garment]?.[size]===undefined?'Price pending':money(livePrices[garment][size]!)}</small></span><div><button type="button" onClick={() => updateSize(size,-1)} aria-label={`Remove one ${size}`}><Minus size={14}/></button><strong>{sizes[size]}</strong><button type="button" onClick={() => updateSize(size,1)} aria-label={`Add one ${size}`}><Plus size={14}/></button></div></div>)}</div>
             <label className="form-field" style={{marginTop:20}}><span>Team roster <small>(optional)</small></span><textarea rows={3} maxLength={4500} placeholder={'For different names and numbers, add one player per line.\nExample: DELA CRUZ - 10 - M\nSANTOS - 21 - L'} value={roster} onChange={e => setRoster(e.target.value)}/></label>
             <label className="form-field" style={{marginTop:14}}><span>Special instructions <small>(optional)</small></span><textarea rows={3} maxLength={1500} placeholder="Tell us about deadlines, logo positioning, or other requests." value={notes} onChange={e=>setNotes(e.target.value)}/></label>
           </section>
           <button type="button" className="button button-dark next-button" disabled={totalPieces<1||totalPieces>100} onClick={() => { setError(''); setReview(true); window.scrollTo({top:0, behavior:'smooth'}); }}>Continue to checkout <ArrowRight size={18}/></button>
         </> : <section className="control-section review-section"><button type="button" className="back-link" onClick={() => {setReview(false); setError('');}}><ArrowLeft size={16}/> Back to customization</button>
           <div className="control-title"><span className="step-num">05</span><div><h2>Checkout</h2><p>Add your delivery address and choose how to pay.</p></div></div>
-          <div className="review-details"><div><span>Garment</span><strong>{selected.label}</strong></div><div><span>Main color</span><strong>{PALETTE.find(c=>c.hex===color)?.name}</strong></div><div><span>Total pieces</span><strong>{totalPieces}</strong></div><div><span>Item subtotal (confirm shop rates)</span><strong>{money(estimate)}</strong></div></div>
+          <div className="review-details"><div><span>Garment</span><strong>{selected.label}</strong></div><div><span>Main color</span><strong>{PALETTE.find(c=>c.hex===color)?.name}</strong></div><div><span>Total pieces</span><strong>{totalPieces}</strong></div><div><span>Item subtotal (confirm shop rates)</span><strong>{estimate===null?'Unavailable':money(estimate)}</strong></div></div>
           <div className="checkout-account-note"><ShieldCheck size={18}/> Have an ML Sportswear account? <Link href="/login?next=/customize" target="_blank" rel="noopener noreferrer">Log in</Link> in a new tab before placing the order to save it in My Orders. Guest checkout still works.</div>
           <form onSubmit={submit} className="contact-form"><label className="form-field"><span>Full name *</span><input required minLength={2} maxLength={120} placeholder="Your full name" value={contactName} onChange={e => setContactName(e.target.value)}/></label>
             <div className="form-grid"><label className="form-field"><span>Email address *</span><input required type="email" maxLength={200} placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}/></label><label className="form-field"><span>Phone number *</span><input required type="tel" minLength={7} maxLength={30} placeholder="09XX XXX XXXX" value={phone} onChange={e => setPhone(e.target.value)}/></label></div>
@@ -205,7 +218,7 @@ export default function CustomizePage() {
             <label className="hidden-honeypot" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)}/></label>
             <p className="privacy-note"><ShieldCheck size={17}/> Your contact and delivery details are used to fulfill this order. Please do not include sensitive information in design notes.</p>
             {error && <div className="request-error" role="alert">{error}</div>}
-            <button className="button button-dark next-button" type="submit" disabled={sending||!livePrices||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
+            <button className="button button-dark next-button" type="submit" disabled={sending||!priceReady||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
             <div className="hint"><Info size={16}/> Item prices are managed by ML Sportswear. GCash QR activates after the shop configures a payment provider. COD collects payment at delivery. Delivery fees, if any, are separate.</div>
           </form>
         </section>}
@@ -237,7 +250,7 @@ export default function CustomizePage() {
           </> : <p className="artwork-editor-empty">Add text or upload a logo to position it here.</p>}
         </div>}
         <div className="preview-card-bottom"><div><span>SELECTED PIECE</span><b>{selected.label}</b></div><div><span>COLORWAY</span><b>{PALETTE.find(c=>c.hex===color)?.name}</b></div><div className="preview-swatches"><i style={{background:color}}/><i style={{background:accentColor}}/><i style={{background:printColor}}/></div></div>
-      </div><div className="estimate-card"><div><span>Order total (items)</span><b>{unitPrice===null?'Unavailable':money(estimate)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} × {unitPrice===null?'—':money(unitPrice)}</span><span>Live shop price</span></div>{pricingError&&<p role="alert" className="request-error">{pricingError}</p>}<p>Official item prices from ML Sportswear. Delivery charges, if applicable, must be confirmed separately.</p></div></aside>
+      </div><div className="estimate-card"><div><span>Order total (items)</span><b>{!priceReady?'Unavailable':money(estimate!)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} · Size-based pricing</span><span>Live shop prices</span></div>{totalPieces>0&&livePrices&&<div className="ml10-size-breakdown">{SIZES.filter(size=>sizes[size]>0).map(size=><div key={size}><span>{size} · {sizes[size]} × {money(livePrices[garment][size])}</span><strong>{money((livePrices[garment][size]||0)*sizes[size])}</strong></div>)}</div>}{pricingError&&<p role="alert" className="request-error">{pricingError}</p>}<p>Official item prices from ML Sportswear. Delivery charges, if applicable, must be confirmed separately.</p></div></aside>
     </div>
   </div>;
 }

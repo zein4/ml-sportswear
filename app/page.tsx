@@ -1,44 +1,35 @@
+import './patch9-shared.css';
+import './patch10-aesthetic.css';
 import Link from 'next/link';
-import { ArrowUpRight, ArrowRight, Sparkles, Palette, UploadCloud, PackageCheck, ShieldCheck, Shirt, Truck, Wallet, Check, Star, MoveUpRight, Layers3, Heart, CircleUserRound } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Ruler, Sparkles, Paintbrush, Truck, LockKeyhole, MoveUpRight } from 'lucide-react';
 import { GarmentPreview } from '@/components/GarmentPreview';
+import { Patch9HeroStage } from '@/components/Patch9HeroStage';
+import { Patch9Motion } from '@/components/Patch9Motion';
+import { Patch9Collection } from '@/components/Patch9Collection';
+import styles from './page.module.css';
 
-const categories=[
-  {num:'01',title:'Game-day Sando',short:'Built for the court.',kind:'sando' as const,color:'#6742e5',tag:'COURT ESSENTIAL',bg:'purple'},
-  {num:'02',title:'Signature Tee',short:'Your everyday statement.',kind:'tshirt' as const,color:'#283e86',tag:'EVERYDAY FAVORITE',bg:'blue'},
-  {num:'03',title:'Match Shorts',short:'The finishing touch.',kind:'shorts' as const,color:'#ca435f',tag:'COMPLETE THE LOOK',bg:'rose'},
-  {num:'04',title:'Team Jersey Set',short:'Everything, in sync.',kind:'set' as const,color:'#226d6b',tag:'FULL TEAM LOOK',bg:'mint'},
-];
 const steps=[
-  {icon:<Shirt size={23}/>,n:'01',title:'Choose your style',copy:'Select Sando, Tee, Shorts or a complete set.'},
-  {icon:<Palette size={23}/>,n:'02',title:'Make it yours',copy:'Pick colors, add names, numbers and upload logos.'},
-  {icon:<Wallet size={23}/>,n:'03',title:'Checkout your way',copy:'Select the available payment option at checkout.'},
-  {icon:<Truck size={23}/>,n:'04',title:'Follow your order',copy:'Check production and delivery progress in one place.'},
+  {no:'01',label:'Find your piece',description:'Browse Sando, T-Shirt, Shorts, or a team set.'},
+  {no:'02',label:'Make it personal',description:'Play with colors, logos, jersey names and numbers.'},
+  {no:'03',label:'Place your order',description:'Choose an available checkout option and confirm.'},
+  {no:'04',label:'Follow the journey',description:'Track production and delivery from your account.'},
 ];
-export default function Home(){return <>
-  <div className="v7-shop-wrap">
-    <div className="v7-top-ticker"><span><Sparkles size={13}/> YOUR COLORS. YOUR TEAM. YOUR IDENTITY.</span><span>DESIGNED BY YOU, MADE FOR YOUR GAME <ArrowUpRight size={13}/></span></div>
-    <section className="v7-shop-hero"><div className="v7-hero-content">
-      <span className="v7-eyebrow"><span className="v7-eyebrow-pip"/> THE CUSTOM SPORTSWEAR STUDIO</span>
-      <h1>Different teams.<br/><em>One-of-a-kind</em><br/>looks.</h1>
-      <p>Your team deserves more than a basic uniform. Explore our pieces, create your colors and turn your idea into something worth wearing.</p>
-      <div className="v7-hero-buttons"><Link href="/customize" className="v7-primary-cta">Customize now <ArrowUpRight size={18}/></Link><a href="#the-collection" className="v7-secondary-cta">Shop the collection <ArrowRight size={18}/></a></div>
-      <div className="v7-hero-proof"><span className="v7-proof-stars"><Star size={15}/><Star size={15}/><Star size={15}/></span><div><strong>Made for personal expression</strong><small>Individual pieces or your whole squad</small></div></div>
-    </div><div className="v7-hero-showcase"><div className="v7-showcase-top"><span>ML / CUSTOM DIVISION</span><span>01—04</span></div>
-      <div className="v7-showcase-halo"><div className="v7-halo-a"/><div className="v7-halo-b"/><GarmentPreview garment="set" color="#6541dc" accentColor="#efe9ff" printColor="#efe9ff" playerName="SPORTSWEAR" playerNumber="08" teamName="ML TEAM" view="front" mini/></div>
-      <span className="v7-float-tag v7-float-tag-left"><Palette size={14}/> YOUR COLORWAY</span>
-      <span className="v7-float-tag v7-float-tag-right"><Check size={14}/> PERSONALIZED</span>
-      <div className="v7-showcase-foot"><span>THE UNIFORM IS YOURS TO DEFINE.</span><span>↗</span></div>
-    </div></section>
-    <div className="v7-shop-strip"><span><Layers3 size={17}/> 4 CUSTOM GARMENT TYPES</span><span><Sparkles size={17}/> PREVIEW YOUR DESIGN</span><span><ShieldCheck size={17}/> PRIVATE CUSTOMER ACCOUNTS</span><span><PackageCheck size={17}/> ORDER TRACKING</span></div>
-    <section className="v7-shop-collection" id="the-collection"><div className="v7-section-top"><div><span className="v7-small-label">01 / THE COLLECTION</span><h2>Find your <em>fit.</em></h2><p>Your idea starts with the perfect piece.</p></div><Link href="/customize" className="v7-subtle-link">Explore all options <ArrowUpRight size={17}/></Link></div>
-      <div className="v7-category-grid">{categories.map(c=><Link key={c.num} href={`/customize?garment=${c.kind}`} className={`v7-category-card v7-category-${c.bg}`}>
-        <div className="v7-category-top"><span>{c.tag}</span><span>{c.num} / 04</span></div>
-        <div className="v7-category-art"><div className="v7-category-ring"/><GarmentPreview garment={c.kind} color={c.color} accentColor="#f5f1ff" printColor="#f9f6ff" playerName="YOUR NAME" playerNumber="10" teamName="ML SPORTS" view="front" mini/></div>
-        <div className="v7-category-info"><div><h3>{c.title}</h3><p>{c.short}</p></div><span className="v7-category-go"><ArrowUpRight size={20}/></span></div>
-      </Link>)}</div></section>
-    <section className="v7-creative-band"><div className="v7-creative-icons"><span><UploadCloud size={25}/></span><span><Palette size={25}/></span><span><Heart size={25}/></span></div><div><span className="v7-small-label">MORE THAN BASIC</span><h2>Every detail tells<br/>your story.</h2><p>Make the colors yours. Upload your logo. Add your team name, player number, and personal touches. See it all on the garment preview before you order.</p><Link href="/customize" className="v7-primary-cta">Open the design studio <ArrowUpRight size={18}/></Link></div><div className="v7-creative-tiles"><span className="v7-colortile v7-tile-one">#6541DC</span><span className="v7-colortile v7-tile-two">#D14565</span><span className="v7-colortile v7-tile-three">#235F68</span><span className="v7-colortile v7-tile-four">#E7C56E</span><div className="v7-creative-stamp">YOUR DESIGN<br/><strong>YOUR RULES.</strong></div></div></section>
-    <section className="v7-how" id="how-it-works"><div className="v7-section-top"><div><span className="v7-small-label">02 / HOW IT WORKS</span><h2>From idea to <em>game day.</em></h2><p>One easy journey, from picking your piece to tracking your order.</p></div></div><div className="v7-steps-grid">{steps.map(step=><div className="v7-step-card" key={step.n}><div className="v7-step-top"><span className="v7-step-icon">{step.icon}</span><small>{step.n} / 04</small></div><h3>{step.title}</h3><p>{step.copy}</p></div>)}</div></section>
-    <section className="v7-member-banner"><div className="v7-member-symbol"><CircleUserRound size={61} strokeWidth={1}/><span>ML MEMBER</span></div><div><span className="v7-small-label">YOUR OWN SPACE</span><h2>Good things happen<br/>when you join the team.</h2><p>Create an account to see your orders together, check delivery updates and get back to designing. Browsing stays free, no account required.</p></div><Link href="/signup" className="v7-member-button">Create your account <ArrowUpRight size={18}/></Link></section>
-    <section className="v7-closing"><div><span className="v7-small-label">THE NEXT LOOK IS YOURS</span><h2>Ready to make<br/>something <em>original?</em></h2></div><Link href="/customize" className="v7-primary-cta">Let's create it <MoveUpRight size={19}/></Link></section>
+export default function Home() {return <>
+  <div className={`${styles.home} ml9-visual-root`}><Patch9Motion/>
+    <div className={styles.ticker}><span>ML SPORTSWEAR / PHILIPPINES</span><span>BUILT FOR YOUR TEAM <Sparkles size={13}/></span><span>THE CUSTOM COLLECTION / 2026</span></div>
+    <section className={styles.hero}>
+      <div className={styles.heroText}><span className={styles.eyebrow}><span className={styles.pulse}/> THE ART OF CUSTOM SPORT</span>
+        <h1>Wear your<br/><em>identity.</em></h1><p>Not just another uniform. A canvas for your team, your colors, and every detail that makes you different.</p>
+        <div className={styles.heroActions}><Link href="/collection" className={styles.primary}>Explore the collection <ArrowUpRight size={18}/></Link><Link href="/customize" className={styles.secondary}>Start designing <ArrowRight size={18}/></Link></div>
+        <div className={styles.heroBottom}><span>01 / THE ML COLLECTION</span><span>SCROLL TO DISCOVER ↓</span></div>
+      </div>
+      <div className={styles.heroDisplay}><Patch9HeroStage/></div>
+    </section>
+    <section className={styles.marquee} aria-label="Custom garment highlights"><div>{Array.from({length:2}).map((_,i)=><span key={i} className={styles.marqueeSet}><span>CREATE</span><i>✳</i><span>PERSONALIZE</span><i>✳</i><span>PLAY</span><i>✳</i><span>REPEAT</span><i>✳</i></span>)}</div></section>
+    <Patch9Collection />
+    <section className={styles.editorial} data-ml9-reveal><div className={styles.editorialCopy}><span className={styles.eyebrow}>BEHIND THE DESIGN / 02</span><h2>Not off<br/>the <i>rack.</i></h2><p>Choose your own colorway. Upload the logo. Put your name on it. We give you the tools to design something nobody else has.</p><Link href="/customize" className={styles.primary}>Enter the design studio <MoveUpRight size={18}/></Link></div><div className={styles.editorialArt}><div className={styles.artTop}><span>CUSTOM / 01</span><span>FRONT / BACK</span></div><div className={styles.artGrid}><div className={styles.artShirt}><GarmentPreview garment="sando" color="#6650b5" accentColor="#eee7ff" printColor="#fff" playerName="VILLAR" playerNumber="24" teamName="ML TEAM" view="front" mini /></div><div className={styles.artShirt}><GarmentPreview garment="sando" color="#6650b5" accentColor="#eee7ff" printColor="#fff" playerName="VILLAR" playerNumber="24" teamName="ML TEAM" view="back" mini /></div></div><div className={styles.artBottom}><Paintbrush size={16}/> THE DESIGN IS ALL YOURS.</div></div></section>
+    <section className={styles.story} id="how-it-works" data-ml9-reveal><div className={styles.storyTitle}><span className={styles.eyebrow}>THE PROCESS / 03</span><h2>From the first sketch<br/>to <i>game day.</i></h2><p>Easy to design. Simple to order. All your updates in one place.</p></div><div className={styles.stepGrid}>{steps.map(s=><div key={s.no} className={styles.step}><span>{s.no}</span><h3>{s.label}</h3><p>{s.description}</p></div>)}</div></section>
+    <section className={styles.links} data-ml9-reveal><Link href="/size-guide"><Ruler size={23}/><span><strong>Not sure about size?</strong><small>Learn how to measure before ordering</small></span><ArrowUpRight size={19}/></Link><Link href="/account"><LockKeyhole size={23}/><span><strong>Your account. Your orders.</strong><small>Sign in for order updates in one place</small></span><ArrowUpRight size={19}/></Link><Link href="/track"><Truck size={23}/><span><strong>Already ordered?</strong><small>Track production and delivery progress</small></span><ArrowUpRight size={19}/></Link></section>
+    <section className={styles.last} data-ml9-reveal><span>READY TO STAND OUT?</span><h2>Make your<br/><i>mark.</i></h2><p>Your next design starts here.</p><Link href="/customize" className={styles.primary}>Create your look <ArrowUpRight size={19}/></Link></section>
   </div>
 </>}

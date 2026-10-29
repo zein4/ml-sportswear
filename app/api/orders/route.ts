@@ -3,7 +3,7 @@ import { newAccessToken } from '@/lib/workflow';
 import { NextResponse } from 'next/server';
 import { validateOrder } from '@/lib/validation';
 import { supabaseAdmin } from '@/lib/supabase-server';
-import { getLivePrices } from '@/lib/garment-prices';
+import { getLivePrices, itemTotal } from '@/lib/garment-prices';
 import { confirmedPricing, paymongoReady, createCheckoutSession } from '@/lib/paymongo';
 
 export const runtime = 'nodejs';
@@ -24,14 +24,13 @@ export async function POST(request: Request) {
     if (!checked.data) return invalid(checked.error || 'Invalid details.');
     const {checkoutMethod,deliveryAddress}=checked.data;
     // Trust the server/database price ONLY, never the customer's browser total.
-    let currentPrice:number|undefined;
-    try {const prices=await getLivePrices(supabase);currentPrice=prices[checked.data.garment];}
-    catch(e){console.error('Order price lookup failed:',e);return invalid('Official prices are unavailable. Please contact the shop.',503);}
-    if(currentPrice===undefined) return invalid('This garment does not have an official price yet. Please contact the shop.',503);
-    const displayedUnitPrice=(parsed && typeof parsed==='object')?(parsed as Record<string,unknown>).displayedUnitPrice:null;
-    if(typeof displayedUnitPrice !== 'number' || !Number.isFinite(displayedUnitPrice) || Math.abs(displayedUnitPrice-currentPrice)>0.00001)
-      return invalid('The shop updated its prices. Refresh the design page, review the new total, then place your order again.',409);
-    const serverTotal=Math.round(currentPrice*checked.quantity!*100)/100;
+    let serverTotal:number|null=null;
+    try{const prices=await getLivePrices(supabase);serverTotal=itemTotal(prices,checked.data.garment,checked.data.sizes);}
+    catch(e){console.error('Order size price lookup failed:',e);return invalid('Official size prices are unavailable. Please contact the shop.',503);}
+    if(serverTotal===null)return invalid('Prices for one or more sizes are missing. Please contact the shop.',503);
+    const displayedTotal=(parsed&&typeof parsed==='object')?(parsed as Record<string,unknown>).displayedTotal:null;
+    if(typeof displayedTotal!=='number'||!Number.isFinite(displayedTotal)||Math.round(displayedTotal*100)!==Math.round(serverTotal*100))
+      return invalid('The shop updated a size price. Refresh your design, review the new total, then order again.',409);
     // Associate orders with a verified logged-in user. Never trust an ID from the form.
     let customerId:string|null=null;
     const authHeader=request.headers.get('authorization');

@@ -1,0 +1,22 @@
+/* ML / PATCH 10 — Stone editorial aesthetic; buyer-facing only. */
+.ml9-visual-root{--ml10-stone:#cad4df;--ml10-ink:#17283e;--ml10-pale:#edf2f6;background:transparent;color:var(--ml10-ink)}
+.ml9-visual-root a:focus-visible,.ml9-visual-root button:focus-visible{outline:3px solid #8197bf;outline-offset:4px}
+.ml9-visual-root [class*="hero"]{isolation:isolate}
+.ml9-visual-root [class*="heroDisplay"]{position:relative}
+.ml9-visual-root [class*="heroDisplay"]:after{content:"";position:absolute;pointer-events:none;inset:0;background:linear-gradient(125deg,transparent 20%,#ffffff18 46%,transparent 72%);transform:translateX(-110%);animation:ml10-gloss 8s ease-in-out infinite}
+.ml9-visual-root [class*="tile"]{transition:transform .32s ease,box-shadow .32s ease,filter .32s ease}
+.ml9-visual-root [class*="tile"]:hover{transform:translateY(-9px);box-shadow:0 25px 40px #21395327}
+.ml9-visual-root [class*="previewGarment"]{animation:ml10-product-in .55s cubic-bezier(.2,.85,.35,1) both}
+.ml9-visual-root [class*="artShirt"]{animation:ml10-floating 5s ease-in-out infinite alternate}
+.ml9-visual-root [class*="artShirt"]:nth-child(2){animation-delay:-2.5s}
+.ml9-visual-root [class*="editorial"]{outline:1px solid #dde4eb55}
+body:has(.customizer-wrap) .customizer-wrap{background:radial-gradient(circle at 90% 6%,#e8f1fc33,transparent 40%),transparent}
+body:has(.customizer-wrap) .studio-controls,body:has(.customizer-wrap) .preview-card{box-shadow:0 20px 45px #13294218;border:1px solid #8195a250;backdrop-filter:blur(5px)}
+body:has(.customizer-wrap) .preview-card{transition:box-shadow .3s ease,transform .3s ease}
+body:has(.customizer-wrap) .preview-card:hover{box-shadow:0 28px 55px #13294228}
+body:has(.customizer-wrap) .ml10-size-breakdown{margin:13px 0;border-top:1px solid #8e9ba948;padding-top:12px;display:grid;gap:8px}
+body:has(.customizer-wrap) .ml10-size-breakdown>div{display:flex;justify-content:space-between;gap:20px;font-size:12px;opacity:.89}
+@keyframes ml10-gloss{0%,28%{transform:translateX(-110%)}70%,100%{transform:translateX(110%)}}
+@keyframes ml10-product-in{from{opacity:.25;transform:translateY(19px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes ml10-floating{from{transform:translateY(9px) rotate(-1deg)}to{transform:translateY(-11px) rotate(1deg)}}
+@media(prefers-reduced-motion:reduce){.ml9-visual-root [class*="heroDisplay"]:after,.ml9-visual-root [class*="previewGarment"],.ml9-visual-root [class*="artShirt"]{animation:none!important}.ml9-visual-root [class*="tile"]{transition:none}}

@@ -1,0 +1,44 @@
+/* ML SPORTSWEAR PATCH 9 — video-inspired editorial collection, own branding */
+.patch9-collection-page{max-width:1480px;margin:auto}.patch9-collection-breadcrumb{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:29px clamp(18px,5vw,65px) 0;color:var(--muted);font-size:11px;font-weight:850}.patch9-collection-breadcrumb a,.patch9-collection-breadcrumb span{display:inline-flex;align-items:center;gap:8px}.patch9-collection-breadcrumb span{color:var(--blue-fg);letter-spacing:.12em;font-size:9px}.patch9-size-page{width:min(1230px,100%);margin:auto;padding:35px clamp(18px,4vw,55px) 100px}.patch9-back{display:inline-flex;gap:8px;align-items:center;color:var(--blue-fg);font-size:12px;font-weight:850;margin-bottom:26px}.patch9-size-hero{display:grid;grid-template-columns:1fr .8fr;align-items:center;background:linear-gradient(130deg,#191a2d,#353058);color:#f2eeff;padding:clamp(35px,6vw,85px);border-radius:18px;min-height:450px;gap:15px}.patch9-legal-eyebrow{color:#c1b5ff;display:inline-flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.14em;font-weight:900}.patch9-size-hero h1{font:normal clamp(52px,7vw,95px)/.95 Georgia,serif;letter-spacing:-.065em;margin:28px 0}.patch9-size-hero h1 i{color:#b7a9ff}.patch9-size-hero p{font-size:13px;max-width:470px;line-height:1.9;color:#d8d3f1}.patch9-size-symbol{display:flex;flex-direction:column;align-items:center;gap:25px;justify-content:center;opacity:.85}.patch9-size-symbol span{font-size:9px;letter-spacing:.12em}.patch9-size-body{padding:60px 15px}.patch9-size-body h2{font:normal 51px/1 Georgia,serif;letter-spacing:-.04em;color:var(--ink);margin-bottom:26px}.patch9-measure-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.patch9-measure-grid>div{padding:26px 20px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}.patch9-measure-grid span{font-weight:900;color:var(--blue-fg);font-size:11px}.patch9-measure-grid h3{font-size:19px;margin:40px 0 10px}.patch9-measure-grid p{font-size:12px;line-height:1.8;color:var(--muted)}.patch9-size-note{margin:32px 0;display:flex;align-items:flex-start;gap:18px;background:var(--blue-tint);border:1px solid var(--outline);border-radius:14px;padding:22px}.patch9-size-note>svg{flex-shrink:0;color:var(--blue-fg)}.patch9-size-note strong{font-size:14px}.patch9-size-note p{font-size:12px;line-height:1.8;color:var(--muted);margin:9px 0 0}.patch9-size-cta{display:inline-flex;align-items:center;gap:18px;background:#9986ee;color:#18142b;border-radius:7px;padding:17px 23px;font-weight:900;font-size:12px}
+@media(max-width:750px){.patch9-size-hero{grid-template-columns:1fr}.patch9-size-symbol{display:none}.patch9-measure-grid{grid-template-columns:1fr 1fr}.patch9-collection-breadcrumb span{display:none}}@media(max-width:450px){.patch9-measure-grid{grid-template-columns:1fr}.patch9-size-body h2{font-size:42px}}
+
+/* PATCH 9.1 / FOG-STONE EDITORIAL LOOK — only the buyer lookbook routes */
+body:has(.ml9-visual-root){
+  background-color:#c6cfd9;
+  background-image:
+    radial-gradient(ellipse at 12% 10%,rgba(255,255,255,.57),transparent 51%),
+    radial-gradient(ellipse at 91% 79%,rgba(90,111,139,.14),transparent 53%),
+    repeating-linear-gradient(90deg,transparent 0 246px,rgba(64,80,102,.055) 247px,transparent 248px),
+    repeating-linear-gradient(0deg,transparent 0 246px,rgba(64,80,102,.052) 247px,transparent 248px);
+  background-attachment:fixed;
+}
+:root[data-theme="dark"] body:has(.ml9-visual-root){
+  background-color:#1a2433;
+  background-image:
+    radial-gradient(ellipse at 9% 2%,rgba(113,136,175,.20),transparent 52%),
+    radial-gradient(ellipse at 96% 88%,rgba(95,106,143,.11),transparent 56%),
+    repeating-linear-gradient(90deg,transparent 0 246px,rgba(197,210,235,.035) 247px,transparent 248px),
+    repeating-linear-gradient(0deg,transparent 0 246px,rgba(197,210,235,.035) 247px,transparent 248px);
+}
+body:has(.ml9-visual-root) .site-header{background:#151f30;color:#f1f3fa;border-bottom:1px solid #57647950;box-shadow:0 3px 26px rgba(26,40,58,.11)}
+body:has(.ml9-visual-root) .site-nav{color:#d6deeb}
+body:has(.ml9-visual-root) .brand-word small{color:#bac6d8}
+body:has(.ml9-visual-root) .header-cta{color:#f7f6ff;border-color:#69758e}
+body:has(.ml9-visual-root) .header-cta:hover{color:#101927;background:#d8e2f0}
+body:has(.ml9-visual-root) .theme-toggle{background:#26374c;border-color:#53657d;color:#f3f6fb}
+body:has(.ml9-visual-root) .theme-toggle:hover{background:#3d5069}
+body:has(.ml9-visual-root) .site-footer{background:#121d2d;color:#d5dfeb;border-color:#41536b}
+body:has(.ml9-visual-root) .site-footer a{color:#c6cee7}
+body:has(.ml9-visual-root) .site-shell{min-height:100vh}
+/* These are reveal effects, not hidden content: content stays visible before JS loads. */
+.ml9-motion-on [data-ml9-reveal]:not(.ml9-visible){opacity:0;transform:translateY(26px)}
+.ml9-motion-on [data-ml9-reveal]{transition:opacity .8s cubic-bezier(.22,.76,.28,1),transform .8s cubic-bezier(.22,.76,.28,1)}
+.ml9-motion-on [data-ml9-reveal].ml9-visible{opacity:1;transform:translateY(0)}
+.patch9-collection-breadcrumb{color:#263850}
+.patch9-collection-breadcrumb a{color:inherit}
+.patch9-size-hero{background:linear-gradient(130deg,#172436,#344b66);border:1px solid #718ba0a6;box-shadow:0 24px 45px rgba(32,45,64,.13)}
+.patch9-measure-grid>div{box-shadow:0 8px 30px rgba(40,57,84,.09)}
+.patch9-size-note{background:#dbe4ee;border-color:#b4c2d2}
+:root[data-theme="dark"] .patch9-collection-breadcrumb{color:#e3ebf8}
+:root[data-theme="dark"] .patch9-size-note{background:#26364e;border-color:#3b4d68}
+@media(prefers-reduced-motion:reduce){.ml9-motion-on [data-ml9-reveal]{opacity:1!important;transform:none!important;transition:none!important}}

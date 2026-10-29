@@ -8,7 +8,7 @@ export async function GET() {
   if (!db) return NextResponse.json({ error: 'Pricing service unavailable.' }, { status: 503, headers: {'Cache-Control':'no-store'} });
   try {
     const prices = await getLivePrices(db);
-    if (!allPricesReady(prices)) return NextResponse.json({ error: 'The shop is setting up its official prices. Please check again later.' }, { status: 503, headers: {'Cache-Control':'no-store'} });
+    if (!allPricesReady(prices)) return NextResponse.json({ error: 'The shop is setting up official prices for each size. Please check again later.' }, { status: 503, headers: {'Cache-Control':'no-store'} });
     return NextResponse.json({ prices }, { headers: {'Cache-Control':'no-store'} });
   } catch (e) {
     console.error('Public pricing lookup failed:', e);
