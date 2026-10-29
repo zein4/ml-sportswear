@@ -4,6 +4,9 @@ import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Inf
 import { GARMENTS, PALETTE, SIZES, initialSizes, type GarmentId, type Size, type SizeCounts, money } from '@/lib/catalog';
 import { clamp, initialArtworkForGarment, type ArtworkKey, type ArtworkPosition } from '@/lib/artwork';
 import { GarmentPreview } from '@/components/GarmentPreview';
+import Link from 'next/link';
+import { supabaseBrowser } from '@/lib/supabase-browser';
+import type { LivePrices } from '@/lib/garment-prices';
 
 const starter = { garment: 'sando' as GarmentId, color: '#3157c9', accentColor: '#f3f1e9', printColor: '#f3f1e9', playerName: 'DELA CRUZ', playerNumber: '10', teamName: 'YOUR TEAM' };
 
@@ -51,6 +54,8 @@ export default function CustomizePage() {
   const [website, setWebsite] = useState('');
   const [checkoutMethod,setCheckoutMethod]=useState<'cod'|'qrph'>('cod');
   const [deliveryAddress,setDeliveryAddress]=useState('');
+  const [livePrices,setLivePrices] = useState<LivePrices|null>(null);
+  const [pricingError,setPricingError] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
@@ -60,6 +65,30 @@ export default function CustomizePage() {
       setGarment(param as GarmentId);
       setArtworkLayout(initialArtworkForGarment(param as GarmentId));
     }
+  }, []);
+  useEffect(() => {
+    const client=supabaseBrowser();
+    if(!client)return;
+    void client.auth.getUser().then(({data})=>{
+      if(!data.user)return;
+      setEmail(prev=>prev||data.user?.email||'');
+      setContactName(prev=>prev||String(data.user?.user_metadata?.full_name||''));
+    });
+  }, []);
+  useEffect(() => {
+    let mounted=true;
+    const load=async()=>{
+      try {
+        const res=await fetch('/api/prices',{cache:'no-store'});
+        const json=await res.json();
+        if(!res.ok)throw Error(json.error||'Official prices are not available.');
+        if(mounted){setLivePrices(json.prices as LivePrices);setPricingError('');}
+      }catch(e){if(mounted){setLivePrices(null);setPricingError(e instanceof Error?e.message:'Could not load official prices.');}}
+    };
+    void load();
+    const focus=()=>{void load();};
+    window.addEventListener('focus',focus);
+    return()=>{mounted=false;window.removeEventListener('focus',focus);};
   }, []);
   useEffect(() => {
     if (!frontFile) { setFrontImage(null); return; }
@@ -74,7 +103,8 @@ export default function CustomizePage() {
 
   const selected = GARMENTS.find(x => x.id === garment)!;
   const totalPieces = useMemo(() => Object.values(sizes).reduce((a,b) => a+b, 0), [sizes]);
-  const estimate = selected.price * totalPieces;
+  const unitPrice = livePrices?.[garment] ?? null;
+  const estimate = (unitPrice ?? 0) * totalPieces;
   const updateSize = (size: Size, diff: number) => setSizes(prev => ({...prev, [size]: Math.max(0, Math.min(100, prev[size] + diff))}));
   const preview = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, frontImage, backImage, view };
   const frontLayers: {key:ArtworkKey;label:string}[] = [
@@ -113,13 +143,17 @@ export default function CustomizePage() {
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (totalPieces < 1 || totalPieces > 100) { setError('Please choose 1 to 100 items.'); return; }
+    if(unitPrice===null){setError('Official prices have not loaded. Please refresh and try again.');return;}
     setSending(true); setError('');
     try {
-      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout, checkoutMethod, deliveryAddress };
+      const payload = { garment, color, accentColor, printColor, playerName, playerNumber, teamName, sizes, roster, notes, contactName, email, phone, organization, website, artworkLayout, checkoutMethod, deliveryAddress, displayedUnitPrice:unitPrice };
       const fd = new FormData(); fd.append('payload', JSON.stringify(payload));
       if (frontFile) fd.append('frontDesign', frontFile);
       if (backFile) fd.append('backDesign', backFile);
-      const response = await fetch('/api/orders', { method: 'POST', body: fd });
+      const client=supabaseBrowser();
+      const {data:sessionData}=client?await client.auth.getSession():{data:{session:null}};
+      const headers:HeadersInit=sessionData.session?{Authorization:`Bearer ${sessionData.session.access_token}`}:{ };
+      const response = await fetch('/api/orders', { method: 'POST', headers, body: fd });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not submit your request.');
       try{sessionStorage.setItem('ml-checkout-order',JSON.stringify({code:result.code,token:result.trackingToken,method:checkoutMethod}));}catch{}
@@ -138,7 +172,7 @@ export default function CustomizePage() {
       <div className="studio-controls">
         {!review ? <>
           <section className="control-section"><div className="control-title"><span className="step-num">01</span><div><h2>Choose your garment</h2><p>Start with the piece you want to customize.</p></div></div>
-            <div className="garment-options">{GARMENTS.map(g => <button key={g.id} type="button" className={'garment-option' + (g.id===garment?' selected':'')} onClick={() => changeGarment(g.id)}><span className="option-number">{g.code}</span><strong>{g.label}</strong><small>{g.descriptor}</small>{g.id===garment && <Check size={16} className="selected-check"/>}</button>)}</div>
+            <div className="garment-options">{GARMENTS.map(g => <button key={g.id} type="button" className={'garment-option' + (g.id===garment?' selected':'')} onClick={() => changeGarment(g.id)}><span className="option-number">{g.code}</span><strong>{g.label}</strong><small>{g.descriptor}</small><small style={{marginTop:8,fontWeight:800,color:"var(--blue)"}}>{livePrices ? money(livePrices[g.id]) + " / piece" : "Price pending"}</small>{g.id===garment && <Check size={16} className="selected-check"/>}</button>)}</div>
           </section>
           <section className="control-section"><div className="control-title"><span className="step-num">02</span><div><h2>Find your colors</h2><p>Pick the base color and finishing details.</p></div></div>
             <ColorField title="Main garment color" value={color} onChange={setColor}/>
@@ -159,6 +193,7 @@ export default function CustomizePage() {
         </> : <section className="control-section review-section"><button type="button" className="back-link" onClick={() => {setReview(false); setError('');}}><ArrowLeft size={16}/> Back to customization</button>
           <div className="control-title"><span className="step-num">05</span><div><h2>Checkout</h2><p>Add your delivery address and choose how to pay.</p></div></div>
           <div className="review-details"><div><span>Garment</span><strong>{selected.label}</strong></div><div><span>Main color</span><strong>{PALETTE.find(c=>c.hex===color)?.name}</strong></div><div><span>Total pieces</span><strong>{totalPieces}</strong></div><div><span>Item subtotal (confirm shop rates)</span><strong>{money(estimate)}</strong></div></div>
+          <div className="checkout-account-note"><ShieldCheck size={18}/> Have an ML Sportswear account? <Link href="/login?next=/customize" target="_blank" rel="noopener noreferrer">Log in</Link> in a new tab before placing the order to save it in My Orders. Guest checkout still works.</div>
           <form onSubmit={submit} className="contact-form"><label className="form-field"><span>Full name *</span><input required minLength={2} maxLength={120} placeholder="Your full name" value={contactName} onChange={e => setContactName(e.target.value)}/></label>
             <div className="form-grid"><label className="form-field"><span>Email address *</span><input required type="email" maxLength={200} placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}/></label><label className="form-field"><span>Phone number *</span><input required type="tel" minLength={7} maxLength={30} placeholder="09XX XXX XXXX" value={phone} onChange={e => setPhone(e.target.value)}/></label></div>
             <label className="form-field"><span>Organization / team <small>(optional)</small></span><input maxLength={120} placeholder="School, team, or organization" value={organization} onChange={e => setOrganization(e.target.value)}/></label>
@@ -170,8 +205,8 @@ export default function CustomizePage() {
             <label className="hidden-honeypot" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)}/></label>
             <p className="privacy-note"><ShieldCheck size={17}/> Your contact and delivery details are used to fulfill this order. Please do not include sensitive information in design notes.</p>
             {error && <div className="request-error" role="alert">{error}</div>}
-            <button className="button button-dark next-button" type="submit" disabled={sending||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
-            <div className="hint"><Info size={16}/> Pricing are beased on ML Sportswear's official price list. QR payment only activates when the shop configures PayMongo. COD does not collect money online.</div>
+            <button className="button button-dark next-button" type="submit" disabled={sending||!livePrices||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
+            <div className="hint"><Info size={16}/> Item prices are managed by ML Sportswear. GCash QR activates after the shop configures a payment provider. COD collects payment at delivery. Delivery fees, if any, are separate.</div>
           </form>
         </section>}
       </div>
@@ -202,7 +237,7 @@ export default function CustomizePage() {
           </> : <p className="artwork-editor-empty">Add text or upload a logo to position it here.</p>}
         </div>}
         <div className="preview-card-bottom"><div><span>SELECTED PIECE</span><b>{selected.label}</b></div><div><span>COLORWAY</span><b>{PALETTE.find(c=>c.hex===color)?.name}</b></div><div className="preview-swatches"><i style={{background:color}}/><i style={{background:accentColor}}/><i style={{background:printColor}}/></div></div>
-      </div><div className="estimate-card"><div><span>Order Total</span><b>{money(estimate)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} × {money(selected.price)}</span><span>Based on selected items and quantities.</span></div><p>For prototype purposes. Final prices must be set and approved by ML Sportswear.</p></div></aside>
+      </div><div className="estimate-card"><div><span>Order total (items)</span><b>{unitPrice===null?'Unavailable':money(estimate)}</b></div><div className="estimate-row"><span>{totalPieces} {totalPieces===1?'piece':'pieces'} × {unitPrice===null?'—':money(unitPrice)}</span><span>Live shop price</span></div>{pricingError&&<p role="alert" className="request-error">{pricingError}</p>}<p>Official item prices from ML Sportswear. Delivery charges, if applicable, must be confirmed separately.</p></div></aside>
     </div>
   </div>;
 }

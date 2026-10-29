@@ -12,6 +12,7 @@ import { GARMENTS, money } from '@/lib/catalog';
 import type { StaffOrder } from '@/lib/admin-types';
 import { OrderWorkflowPanel } from '@/components/OrderWorkflowPanel';
 import { CheckoutOrderPanel } from '@/components/CheckoutOrderPanel';
+import { AdminPriceManager } from '@/components/AdminPriceManager';
 
 function csvEscape(value: unknown) {
   let str = String(value ?? '').replace(/[\r\n]+/g, ' ');
@@ -144,6 +145,7 @@ export default function AdminPage() {
       <div className="v6-metric"><div className="v6-metric-top"><span>Delivered</span><span className="v6-metric-icon v6-metric-icon-good"><CheckCircle2 size={18}/></span></div><strong>{stats.delivered}</strong><small>{stats.cancelled} cancelled order{stats.cancelled === 1 ? '' : 's'}</small></div>
     </div>
 
+    <AdminPriceManager token={token}/>
     <section className="v6-list-panel" aria-label="Orders">
       <div className="v6-list-title"><div><span className="section-kicker">YOUR ORDERS</span><h2>Manage customer orders</h2><p>Open an order to update delivery, check designs, or cancel an eligible COD order.</p></div><button type="button" className="small-button" disabled={!visible.length} onClick={exportCsv}><Download size={15}/> Export CSV</button></div>
       <div className="v6-filter-pills" role="group" aria-label="Quick order filters">

@@ -3,6 +3,7 @@ import { newAccessToken } from '@/lib/workflow';
 import { NextResponse } from 'next/server';
 import { validateOrder } from '@/lib/validation';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { getLivePrices } from '@/lib/garment-prices';
 import { confirmedPricing, paymongoReady, createCheckoutSession } from '@/lib/paymongo';
 
 export const runtime = 'nodejs';
@@ -22,6 +23,24 @@ export async function POST(request: Request) {
     const checked = validateOrder(parsed);
     if (!checked.data) return invalid(checked.error || 'Invalid details.');
     const {checkoutMethod,deliveryAddress}=checked.data;
+    // Trust the server/database price ONLY, never the customer's browser total.
+    let currentPrice:number|undefined;
+    try {const prices=await getLivePrices(supabase);currentPrice=prices[checked.data.garment];}
+    catch(e){console.error('Order price lookup failed:',e);return invalid('Official prices are unavailable. Please contact the shop.',503);}
+    if(currentPrice===undefined) return invalid('This garment does not have an official price yet. Please contact the shop.',503);
+    const displayedUnitPrice=(parsed && typeof parsed==='object')?(parsed as Record<string,unknown>).displayedUnitPrice:null;
+    if(typeof displayedUnitPrice !== 'number' || !Number.isFinite(displayedUnitPrice) || Math.abs(displayedUnitPrice-currentPrice)>0.00001)
+      return invalid('The shop updated its prices. Refresh the design page, review the new total, then place your order again.',409);
+    const serverTotal=Math.round(currentPrice*checked.quantity!*100)/100;
+    // Associate orders with a verified logged-in user. Never trust an ID from the form.
+    let customerId:string|null=null;
+    const authHeader=request.headers.get('authorization');
+    if(authHeader){
+      if(!authHeader.startsWith('Bearer '))return invalid('Please sign in again.',401);
+      const {data:{user},error:authError}=await supabase.auth.getUser(authHeader.slice(7));
+      if(authError||!user)return invalid('Your customer session expired. Please log in again.',401);
+      customerId=user.id;
+    }
     if (checkoutMethod && process.env.NODE_ENV==='production' && !confirmedPricing()) return invalid('Checkout is not open until ML Sportswear confirms the actual price list.',503);
     if(checkoutMethod==='qrph'&&!paymongoReady())return invalid('GCash checkout is not enabled yet. Choose Cash on Delivery or ask the shop to enable PayMongo.',503);
     const front = form.get('frontDesign');
@@ -49,12 +68,12 @@ export async function POST(request: Request) {
     }
     const d=checked.data;
     const { error } = await supabase.from('orders').insert({
-      id, code, garment:d.garment, color:d.color, accent_color:d.accentColor, print_color:d.printColor,
+      id, code, customer_id:customerId, garment:d.garment, color:d.color, accent_color:d.accentColor, print_color:d.printColor,
       player_name:d.playerName, player_number:d.playerNumber, team_name:d.teamName,
       sizes:d.sizes, quantity:checked.quantity, roster:d.roster, notes:d.notes,
       contact_name:d.contactName, email:d.email, phone:d.phone, organization:d.organization,
-      estimated_total:checked.total, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:checkoutMethod?'approved':'new', tracking_token_hash:access.hash,
-      ...(checkoutMethod?{quoted_total:checked.total,checkout_method:checkoutMethod,checkout_status:checkoutMethod==='cod'?'cod_pending':'awaiting_payment',delivery_address:deliveryAddress}:{}),
+      estimated_total:serverTotal, front_design_path:frontPath, back_design_path:backPath, artwork_layout:d.artworkLayout, status:checkoutMethod?'approved':'new', tracking_token_hash:access.hash,
+      ...(checkoutMethod?{quoted_total:serverTotal,checkout_method:checkoutMethod,checkout_status:checkoutMethod==='cod'?'cod_pending':'awaiting_payment',delivery_address:deliveryAddress}:{}),
     });
     if (error) {
       if (uploads.length) await supabase.storage.from('design-uploads').remove(uploads);
@@ -63,7 +82,7 @@ export async function POST(request: Request) {
     }
     if (checkoutMethod==='qrph') {
       try {
-        const session=await createCheckoutSession({code,amount:checked.total!,garment:d.garment,quantity:checked.quantity!,origin:new URL(request.url).origin});
+        const session=await createCheckoutSession({code,amount:serverTotal,garment:d.garment,quantity:checked.quantity!,origin:new URL(request.url).origin});
         const {error:sessionError}=await supabase.from('orders').update({paymongo_checkout_id:session.id,paymongo_checkout_url:session.url}).eq('id',id).eq('checkout_status','awaiting_payment');
         if(sessionError){console.error('Could not save checkout session',sessionError.message);return invalid('Order saved but GCash checkout could not be prepared. Open your private order link to retry.',500);}
         return NextResponse.json({code,trackingToken:access.token,checkoutUrl:session.url},{status:201});
