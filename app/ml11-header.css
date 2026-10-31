@@ -1,0 +1,8 @@
+/* Patch 11: small global header updates only. Does not affect checkout/admin. */
+.site-header{min-height:76px;height:auto;padding-top:12px;padding-bottom:12px;box-shadow:0 2px 12px rgba(13,32,58,.04)}
+.site-header .ml11-brand-logo{height:43px;width:43px;object-fit:contain;flex:none}
+.site-header .brand-word{letter-spacing:1.25px}
+.site-header .site-nav a{white-space:nowrap}
+.site-header .site-nav a:hover{color:#3178c9}
+@media(max-width:960px){.site-header .site-nav{gap:15px}}
+@media(max-width:740px){.site-header .ml11-brand-logo{height:35px;width:35px}.site-header .brand-word{font-size:11px}}

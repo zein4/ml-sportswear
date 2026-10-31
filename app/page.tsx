@@ -1,35 +1,35 @@
-import './patch9-shared.css';
-import './patch10-aesthetic.css';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, ArrowRight, Ruler, Sparkles, Paintbrush, Truck, LockKeyhole, MoveUpRight } from 'lucide-react';
-import { GarmentPreview } from '@/components/GarmentPreview';
-import { Patch9HeroStage } from '@/components/Patch9HeroStage';
-import { Patch9Motion } from '@/components/Patch9Motion';
-import { Patch9Collection } from '@/components/Patch9Collection';
-import styles from './page.module.css';
+import Image from 'next/image';
+import { ArrowRight, BadgeCheck, Brush, HeartHandshake, Palette, Shirt, Truck, UsersRound, Gem, Wrench, ClipboardCheck } from 'lucide-react';
+import { ML112Featured } from '@/components/ML112Featured';
+import { ML112HeroArt } from '@/components/ML112HeroArt';
+import styles from './ML112Home.module.css';
 
-const steps=[
-  {no:'01',label:'Find your piece',description:'Browse Sando, T-Shirt, Shorts, or a team set.'},
-  {no:'02',label:'Make it personal',description:'Play with colors, logos, jersey names and numbers.'},
-  {no:'03',label:'Place your order',description:'Choose an available checkout option and confirm.'},
-  {no:'04',label:'Follow the journey',description:'Track production and delivery from your account.'},
+export const metadata: Metadata = {
+  title:'ML Sportswear Philippines | Custom jerseys, sportswear and team uniforms',
+  description:'Explore the ML Sportswear Philippines collection of custom sportswear designs, personalize your garment, choose sizes, and track an order.',
+};
+const categories=[
+ {label:'Basketball sets',src:'/ml113/purple-white-set.webp',href:'/collection?category=Basketball%20sets'},
+ {label:'Long sleeves',src:'/ml113/gray-long-sleeve.webp',href:'/collection?category=Long%20sleeves'},
+ {label:'T-Shirts',src:'/ml113/white-legends-shirt.webp',href:'/collection?category=T-Shirts'},
+ {label:'Hoodies',src:'/ml113/green-team-hoodie.webp',href:'/collection?category=Hoodies%20%26%20jackets'},
+ {label:'Custom designs',src:'/ml113/blue-studio-jersey.webp',href:'/customize'},
 ];
-export default function Home() {return <>
-  <div className={`${styles.home} ml9-visual-root`}><Patch9Motion/>
-    <div className={styles.ticker}><span>ML SPORTSWEAR / PHILIPPINES</span><span>BUILT FOR YOUR TEAM <Sparkles size={13}/></span><span>THE CUSTOM COLLECTION / 2026</span></div>
-    <section className={styles.hero}>
-      <div className={styles.heroText}><span className={styles.eyebrow}><span className={styles.pulse}/> THE ART OF CUSTOM SPORT</span>
-        <h1>Wear your<br/><em>identity.</em></h1><p>Not just another uniform. A canvas for your team, your colors, and every detail that makes you different.</p>
-        <div className={styles.heroActions}><Link href="/collection" className={styles.primary}>Explore the collection <ArrowUpRight size={18}/></Link><Link href="/customize" className={styles.secondary}>Start designing <ArrowRight size={18}/></Link></div>
-        <div className={styles.heroBottom}><span>01 / THE ML COLLECTION</span><span>SCROLL TO DISCOVER ↓</span></div>
-      </div>
-      <div className={styles.heroDisplay}><Patch9HeroStage/></div>
-    </section>
-    <section className={styles.marquee} aria-label="Custom garment highlights"><div>{Array.from({length:2}).map((_,i)=><span key={i} className={styles.marqueeSet}><span>CREATE</span><i>✳</i><span>PERSONALIZE</span><i>✳</i><span>PLAY</span><i>✳</i><span>REPEAT</span><i>✳</i></span>)}</div></section>
-    <Patch9Collection />
-    <section className={styles.editorial} data-ml9-reveal><div className={styles.editorialCopy}><span className={styles.eyebrow}>BEHIND THE DESIGN / 02</span><h2>Not off<br/>the <i>rack.</i></h2><p>Choose your own colorway. Upload the logo. Put your name on it. We give you the tools to design something nobody else has.</p><Link href="/customize" className={styles.primary}>Enter the design studio <MoveUpRight size={18}/></Link></div><div className={styles.editorialArt}><div className={styles.artTop}><span>CUSTOM / 01</span><span>FRONT / BACK</span></div><div className={styles.artGrid}><div className={styles.artShirt}><GarmentPreview garment="sando" color="#6650b5" accentColor="#eee7ff" printColor="#fff" playerName="VILLAR" playerNumber="24" teamName="ML TEAM" view="front" mini /></div><div className={styles.artShirt}><GarmentPreview garment="sando" color="#6650b5" accentColor="#eee7ff" printColor="#fff" playerName="VILLAR" playerNumber="24" teamName="ML TEAM" view="back" mini /></div></div><div className={styles.artBottom}><Paintbrush size={16}/> THE DESIGN IS ALL YOURS.</div></div></section>
-    <section className={styles.story} id="how-it-works" data-ml9-reveal><div className={styles.storyTitle}><span className={styles.eyebrow}>THE PROCESS / 03</span><h2>From the first sketch<br/>to <i>game day.</i></h2><p>Easy to design. Simple to order. All your updates in one place.</p></div><div className={styles.stepGrid}>{steps.map(s=><div key={s.no} className={styles.step}><span>{s.no}</span><h3>{s.label}</h3><p>{s.description}</p></div>)}</div></section>
-    <section className={styles.links} data-ml9-reveal><Link href="/size-guide"><Ruler size={23}/><span><strong>Not sure about size?</strong><small>Learn how to measure before ordering</small></span><ArrowUpRight size={19}/></Link><Link href="/account"><LockKeyhole size={23}/><span><strong>Your account. Your orders.</strong><small>Sign in for order updates in one place</small></span><ArrowUpRight size={19}/></Link><Link href="/track"><Truck size={23}/><span><strong>Already ordered?</strong><small>Track production and delivery progress</small></span><ArrowUpRight size={19}/></Link></section>
-    <section className={styles.last} data-ml9-reveal><span>READY TO STAND OUT?</span><h2>Make your<br/><i>mark.</i></h2><p>Your next design starts here.</p><Link href="/customize" className={styles.primary}>Create your look <ArrowUpRight size={19}/></Link></section>
-  </div>
-</>}
+export default function Home(){return <div className={styles.page}>
+ <section className={styles.hero} aria-labelledby="hero-title">
+   <div className={styles.heroArt}><ML112HeroArt/></div>
+   <div className={styles.heroText}><p className={styles.eyebrow}>TEAMWEAR. YOUR WAY.</p>
+    <h1 id="hero-title">CUSTOM SPORTSWEAR<br/><span>MADE FOR YOUR TEAM.</span></h1>
+    <p className={styles.heroLead}>Premium quality. Fully customizable.<br/>Built for teams, built for enthusiasts.</p>
+    <div className={styles.actions}><Link href="/collection" className={styles.primary}>SHOP COLLECTION <ArrowRight size={17}/></Link><Link href="/customize" className={styles.secondary}><Shirt size={18}/> CUSTOMIZE NOW</Link></div>
+    <div className={styles.benefits}><span><Gem size={21}/> PREMIUM<br/>QUALITY</span><span><Wrench size={21}/> FULL<br/>CUSTOMIZATION</span><span><Truck size={21}/> DELIVERY<br/>OPTIONS</span><span><UsersRound size={21}/> TEAMS &<br/>ORGANIZATIONS</span></div>
+   </div>
+ </section>
+ <nav className={styles.categoryBar} aria-label="Shop categories">{categories.map(c=><Link href={c.href} key={c.label} className={styles.category}><div className={styles.categoryPicture}><Image src={c.src} alt="" width={120} height={120}/></div><strong>{c.label}</strong><ArrowRight size={16} className={styles.categoryArrow}/></Link>)}</nav>
+ <ML112Featured/>
+ <section className={styles.bottomCta} aria-label="Customize sportswear"><div className={styles.bottomPhoto}><div className={styles.bottomText}><small>MAKE IT YOURS</small><h2>CUSTOMIZE<br/>WITHOUT LIMITS</h2><p>Your design. Your colors. Your team.</p><Link href="/customize" className={styles.primary}>START CUSTOMIZING <ArrowRight size={16}/></Link></div></div><div className={styles.whiteFeature}><div><Brush size={24}/><span>CUSTOM<br/>DESIGNS</span></div><div><Shirt size={24}/><span>ANY NAME<br/>ANY NUMBER</span></div><div><Palette size={24}/><span>WIDE COLOR<br/>OPTIONS</span></div><div><HeartHandshake size={24}/><span>FOR TEAMS<br/>& EVENTS</span></div></div></section>
+ <section className={styles.help} id="how-it-works"><strong>How it works</strong><span><BadgeCheck size={17}/> Choose a design</span><span><Brush size={17}/> Customize your garment</span><span><ClipboardCheck size={17}/> Review and place your order</span><Link href="/track">Track order <ArrowRight size={16}/></Link></section>
+ <p className={styles.mockupNote}>Photos show sample designs and presentation mockups. Garment colors and production results may vary. Current size-based prices are confirmed in the customizer.</p>
+ </div>}
