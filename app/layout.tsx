@@ -4,6 +4,7 @@ import './globals.css';
 import './ml11-header.css';
 import './ml111-site.css';
 import './ml112-shell.css';
+import './ml12-upgrade.css';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CustomerNav } from '@/components/CustomerNav';
 import { ML111Search } from '@/components/ML111Search';
@@ -31,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <main>{children}</main>
       <footer className="site-footer ml112-footer" id="contact"><div className="ml112-footer-main">
         <div className="ml112-footer-brand"><Link href="/" className="ml112-footer-logo"><img src="/ml11/logo.png" alt="ML Sportswear white crown emblem" width="48" height="48"/><span><strong>ML SPORTSWEAR</strong><small>PHILIPPINES</small></span></Link><p>Custom sportswear for teams, schools, and organizations.<br/>Quality full sublimation, Philippine made.</p></div>
-        <div className="ml112-footer-links"><strong>QUICK LINKS</strong><div><Link href="/">Home</Link><Link href="/collection">Shop</Link><Link href="/customize">Customize</Link><Link href="/collection#featured-designs">Collections</Link><Link href="/track">Track Order</Link><Link href="/account">My Account</Link></div></div>
+        <div className="ml112-footer-links"><strong>QUICK LINKS</strong><div><Link href="/">Home</Link><Link href="/collection">Shop</Link><Link href="/customize">Customize</Link><Link href="/collection#featured-designs">Collections</Link><Link href="/track">Track Order</Link><Link href="/size-guide">Size Guide</Link><Link href="/account">My Account</Link></div></div>
         <div className="ml112-footer-contact"><strong>CONTACT US</strong><a href="tel:+639625224401"><Phone size={14}/>0962-5224401</a><a href="tel:+639361292505"><Phone size={14}/>0936-1292505</a><a href="mailto:mlgenapp@gmail.com"><Mail size={14}/>mlgenapp@gmail.com</a><span><Facebook size={14}/>ML Sportswear Philippines</span></div>
         <div className="ml112-footer-help"><strong>NEED A CUSTOM DESIGN?</strong><p>Ask us about sizes, samples, team orders, and styles not yet in the online customizer.</p><a href="mailto:mlgenapp@gmail.com?subject=ML%20Sportswear%20Inquiry">CONTACT THE SHOP →</a></div>
       </div><div className="ml112-footer-bottom"><span>© {new Date().getFullYear()} ML Sportswear Philippines. All rights reserved.</span><div><Link href="/privacy">Privacy Policy</Link><Link href="/terms">Terms &amp; Conditions</Link><Link href="/account">My Orders</Link></div></div></footer>

@@ -50,3 +50,6 @@
 :global(:root[data-theme="dark"]) .sizes button.activeSize{background:#dce7f6;color:#162a40}
 @media(max-width:720px){.section{padding-top:50px}}
 @media(prefers-reduced-motion:reduce){.previewGarment{animation:none!important}.tileArt :global(.preview-stage){transition:none}}
+
+/* Patch 12: comfortably readable collection details */
+.kicker{font-size:11.5px}.tileFoot strong{font-size:14px}.tileIndex{font-size:10px}.description{font-size:14px}.price small{font-size:12px}.fieldLabel{font-size:12px}.sizes button{font-size:13px}.guideLink{font-size:13px}.helper{font-size:12px}.bottomLink{font-size:13px}.modalLink{font-size:13px}

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Info, Minus, Plus, RotateCcw, ShieldCheck, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, ImagePlus, Info, Minus, Plus, RotateCcw, ShieldCheck, Ruler, X } from 'lucide-react';
 import { GARMENTS, PALETTE, SIZES, initialSizes, type GarmentId, type Size, type SizeCounts, money } from '@/lib/catalog';
 import { clamp, initialArtworkForGarment, type ArtworkKey, type ArtworkPosition } from '@/lib/artwork';
 import { GarmentPreview } from '@/components/GarmentPreview';
@@ -169,7 +169,7 @@ export default function CustomizePage() {
       const response = await fetch('/api/orders', { method: 'POST', headers, body: fd });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not submit your request.');
-      try{sessionStorage.setItem('ml-checkout-order',JSON.stringify({code:result.code,token:result.trackingToken,method:checkoutMethod}));}catch{}
+      try{sessionStorage.setItem('ml-checkout-order',JSON.stringify({code:result.code,token:result.trackingToken,method:checkoutMethod,total:estimate}));}catch{}
       if (result.checkoutUrl) window.location.assign(result.checkoutUrl);
       else window.location.assign(`/success#code=${encodeURIComponent(result.code)}&token=${encodeURIComponent(result.trackingToken)}`);
     } catch (err) {
@@ -198,6 +198,7 @@ export default function CustomizePage() {
             <div className="hint"><Info size={16}/> Drag artwork on the live preview. Select it to resize using the bottom-right handle. You can also fine-tune placement with the editor buttons.</div>
           </section>
           <section className="control-section"><div className="control-title"><span className="step-num">04</span><div><h2>Sizes & quantity</h2><p>Add the number of pieces needed in each size.</p></div></div>
+            <p className="ml12-size-link"><Link href="/size-guide"><Ruler size={16}/> View official size guide and measurements</Link></p>
             <div className="sizes-grid">{SIZES.map(size => <div className="size-counter" key={size}><span>{size}<small style={{display:'block',opacity:.8,fontSize:10,marginTop:4}}>{livePrices?.[garment]?.[size]===undefined?'Price pending':money(livePrices[garment][size]!)}</small></span><div><button type="button" onClick={() => updateSize(size,-1)} aria-label={`Remove one ${size}`}><Minus size={14}/></button><strong>{sizes[size]}</strong><button type="button" onClick={() => updateSize(size,1)} aria-label={`Add one ${size}`}><Plus size={14}/></button></div></div>)}</div>
             <label className="form-field" style={{marginTop:20}}><span>Team roster <small>(optional)</small></span><textarea rows={3} maxLength={4500} placeholder={'For different names and numbers, add one player per line.\nExample: DELA CRUZ - 10 - M\nSANTOS - 21 - L'} value={roster} onChange={e => setRoster(e.target.value)}/></label>
             <label className="form-field" style={{marginTop:14}}><span>Special instructions <small>(optional)</small></span><textarea rows={3} maxLength={1500} placeholder="Tell us about deadlines, logo positioning, or other requests." value={notes} onChange={e=>setNotes(e.target.value)}/></label>
@@ -212,14 +213,14 @@ export default function CustomizePage() {
             <label className="form-field"><span>Organization / team <small>(optional)</small></span><input maxLength={120} placeholder="School, team, or organization" value={organization} onChange={e => setOrganization(e.target.value)}/></label>
             <label className="form-field"><span>Delivery address *</span><textarea required minLength={12} maxLength={500} rows={3} placeholder="House / street, barangay, city, province, postal code" value={deliveryAddress} onChange={e=>setDeliveryAddress(e.target.value)}/></label>
             <div className="checkout-methods" role="radiogroup" aria-label="Payment method">
-              <button type="button" role="radio" aria-checked={checkoutMethod==='qrph'} className={'checkout-choice'+(checkoutMethod==='qrph'?' selected':'')} onClick={()=>setCheckoutMethod('qrph')}><strong>GCash / QR Ph</strong><small>Scan a QR or pay securely in GCash. The payment provider confirms automatically.</small></button>
+              <button type="button" role="radio" aria-checked={checkoutMethod==='qrph'} className={'checkout-choice'+(checkoutMethod==='qrph'?' selected':'')} onClick={()=>setCheckoutMethod('qrph')}><strong>GCash / QR Ph</strong><small>Scan the shop QR after ordering, then upload your receipt for staff verification.</small></button>
               <button type="button" role="radio" aria-checked={checkoutMethod==='cod'} className={'checkout-choice'+(checkoutMethod==='cod'?' selected':'')} onClick={()=>setCheckoutMethod('cod')}><strong>Cash on Delivery</strong><small>Place your order now. Pay cash when your items arrive.</small></button>
             </div>
             <label className="hidden-honeypot" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)}/></label>
             <p className="privacy-note"><ShieldCheck size={17}/> Your contact and delivery details are used to fulfill this order. Please do not include sensitive information in design notes.</p>
             {error && <div className="request-error" role="alert">{error}</div>}
-            <button className="button button-dark next-button" type="submit" disabled={sending||!priceReady||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Proceed to GCash / QR payment'} <ArrowRight size={18}/></button>
-            <div className="hint"><Info size={16}/> Item prices are managed by ML Sportswear. GCash QR activates after the shop configures a payment provider. COD collects payment at delivery. Delivery fees, if any, are separate.</div>
+            <button className="button button-dark next-button" type="submit" disabled={sending||!priceReady||totalPieces<1||totalPieces>100}>{sending ? 'Placing order…' : checkoutMethod==='cod' ? 'Place order — Cash on Delivery' : 'Place order — Pay via GCash QR'} <ArrowRight size={18}/></button>
+            <div className="hint"><Info size={16}/> Item prices are managed by ML Sportswear. GCash QR appears after your order is placed, once the shop uploads its official QR. Staff manually verifies your GCash receipt. COD collects payment at delivery. Delivery fees, if any, are separate.</div>
           </form>
         </section>}
       </div>

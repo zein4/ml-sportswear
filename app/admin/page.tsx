@@ -13,6 +13,7 @@ import type { StaffOrder } from '@/lib/admin-types';
 import { OrderWorkflowPanel } from '@/components/OrderWorkflowPanel';
 import { CheckoutOrderPanel } from '@/components/CheckoutOrderPanel';
 import { AdminPriceManager } from '@/components/AdminPriceManager';
+import { AdminStorefrontManager } from '@/components/AdminStorefrontManager';
 
 function csvEscape(value: unknown) {
   let str = String(value ?? '').replace(/[\r\n]+/g, ' ');
@@ -33,7 +34,7 @@ function paymentLabel(o: StaffOrder) {
   if (isCancelled(o)) return 'Cancelled';
   if (o.checkout_status === 'paid' || o.checkout_status === 'cod_collected') return 'Paid';
   if (o.checkout_method === 'cod') return 'COD pending';
-  if (o.checkout_method === 'qrph') return 'QR pending';
+  if (o.checkout_method === 'qrph') return o.payments.some(p=>p.status==='submitted') ? 'Verify GCash receipt' : 'QR pending';
   if (o.payments.some(p => p.status === 'submitted')) return 'Verify proof';
   if (o.payments.some(p => p.status === 'verified')) return 'Verified';
   return 'Unpaid';
@@ -105,7 +106,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/orders', { method: 'PATCH', headers: { Authorization: `Bearer ${access}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ id: selectedId, action, ...extra }) });
       const json = await res.json();
       if (!res.ok) throw Error(json.error || 'Could not save order.');
-      setMessage(action === 'cancel_checkout' ? 'Order cancelled successfully. The customer can see this on their tracking page.' : action === 'tracking_link' ? 'New private tracking link created. Copy it now.' : 'Order details updated successfully.');
+      setMessage(action === 'cancel_checkout' ? 'Order cancelled successfully. The customer can see this on their tracking page.' : action === 'verify_qr_payment' ? 'GCash payment marked as paid after staff confirmation.' : action === 'tracking_link' ? 'New private tracking link created. Copy it now.' : 'Order details updated successfully.');
       await fetchRows(access);
       return json;
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not save.'); return null; }
@@ -146,6 +147,7 @@ export default function AdminPage() {
     </div>
 
     <AdminPriceManager token={token}/>
+    <AdminStorefrontManager token={token}/>
     <section className="v6-list-panel" aria-label="Orders">
       <div className="v6-list-title"><div><span className="section-kicker">YOUR ORDERS</span><h2>Manage customer orders</h2><p>Open an order to update delivery, check designs, or cancel an eligible COD order.</p></div><button type="button" className="small-button" disabled={!visible.length} onClick={exportCsv}><Download size={15}/> Export CSV</button></div>
       <div className="v6-filter-pills" role="group" aria-label="Quick order filters">

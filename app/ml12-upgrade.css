@@ -1,0 +1,56 @@
+/* Patch 12: restrained typographic improvements and motion with reduced-motion support */
+.ml111-header .site-nav a{font-size:12.5px!important;letter-spacing:.005em}
+.ml111-header .brand-word{font-size:16px!important}
+.ml111-header .ml111-search input{font-size:12px!important}
+.ml112-footer .ml112-footer-main>div>strong{font-size:12px}
+.ml112-footer .ml112-footer-links a,.ml112-footer .ml112-footer-contact a,.ml112-footer .ml112-footer-contact span{font-size:12px}
+.ml112-footer .ml112-footer-brand p,.ml112-footer .ml112-footer-help p{font-size:12px}
+.ml112-footer .ml112-footer-bottom{font-size:11px}
+.customizer-wrap,.admin-wrap,.track-page,.success-wrap,.account-wrap{font-size:14px}
+.customizer-wrap input,.customizer-wrap select,.customizer-wrap textarea,.admin-wrap input,.admin-wrap select,.admin-wrap textarea,.track-page input{font-size:14px}
+.customizer-wrap .form-field span,.customizer-wrap .control-title p,.customizer-wrap .hint,.customizer-wrap .privacy-note,.admin-wrap .hint,.track-page .hint{font-size:13px;line-height:1.6}
+.customizer-wrap .control-title h2{font-size:21px}
+.customizer-wrap .garment-option strong{font-size:15px}
+.admin-wrap .small-button,.customizer-wrap .button,.track-page .button,.account-wrap .button{font-size:13px}
+.ml12-size-link{margin:6px 0 16px;font-size:14px!important}
+.ml12-size-link a,.ml12-guide-back{color:var(--blue-fg,#278cf5);display:inline-flex;align-items:center;gap:7px;text-decoration:underline;text-underline-offset:4px;font-weight:850}
+/* Staff config cards use existing site theme variables, not a new visual style */
+.ml12-admin-tools{border:1px solid var(--line,#43516a);background:var(--surface,#182339);border-radius:13px;padding:22px;margin:22px 0;box-shadow:var(--shade-shadow,none)}
+.ml12-admin-tools-title h2{font-size:clamp(21px,2.6vw,28px);margin:8px 0 5px;line-height:1.15}.ml12-admin-tools-title p{font-size:14px;color:var(--muted);margin:0 0 20px}
+.ml12-admin-tool-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:start}
+.ml12-admin-panel{padding:20px;border:1px solid var(--line,#364b65);background:var(--surface-alt,#1c2c45);border-radius:12px;min-width:0}
+.ml12-panel-heading{display:flex;align-items:center;gap:10px;margin-bottom:17px}.ml12-panel-heading svg{color:var(--blue-fg,#80b8ff);flex:none}.ml12-panel-heading h3{font-size:17px;margin:0 0 5px}.ml12-panel-heading p{color:var(--muted);font-size:12px;line-height:1.5;margin:0}
+.ml12-field,.ml12-admin-payment-form label{display:grid;gap:7px;margin-bottom:13px;font-size:13px;font-weight:700;color:var(--ink)}
+.ml12-field select,.ml12-admin-payment-form input:not([type=file]){width:100%;padding:10px 12px;border:1px solid var(--outline);border-radius:7px;background:var(--field-bg,var(--surface));color:var(--ink);font:inherit}
+.ml12-table-scroll{width:100%;overflow-x:auto}.ml12-size-table{border-collapse:collapse;min-width:550px;width:100%;font-size:13px;color:var(--ink)}
+.ml12-size-table th,.ml12-size-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:center}.ml12-size-table th:first-child{text-align:left;font-weight:850}.ml12-size-table thead th{font-size:12px;font-weight:850;background:var(--surface);white-space:nowrap}
+.ml12-size-table td input{width:100%;min-width:62px;max-width:100px;text-align:center;padding:8px;border:1px solid var(--outline);border-radius:6px;background:var(--field-bg);color:var(--ink);font-size:13px}
+.ml12-action{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;margin-top:16px;min-height:42px;cursor:pointer}
+.ml12-admin-qr{display:grid;justify-items:start;gap:8px;margin:16px 0;padding:10px;border-radius:9px;background:#fff;width:max-content;max-width:100%}.ml12-admin-qr img{display:block;max-width:100%;height:auto;object-fit:contain}.ml12-admin-qr span{color:#1a3447;font-size:12px;font-weight:850;display:flex;align-items:center;gap:6px}
+.ml12-qr-empty{padding:20px;border:1px dashed var(--outline);border-radius:10px;color:var(--muted);font-size:13px;margin:12px 0}
+.ml12-upload-label{cursor:pointer;padding:12px;border:1px dashed var(--outline);border-radius:9px;display:flex!important;align-items:center;gap:9px;line-height:1.4}.ml12-upload-label input{display:block;max-width:170px;font-size:11px}
+.ml12-remove{display:inline-flex;align-items:center;gap:8px;color:#db596b;margin:10px 0 0 14px;border:0;background:transparent;font-size:12px;font-weight:800;cursor:pointer}
+.ml12-staff-warning{font-size:12px;display:flex;gap:9px;line-height:1.5;color:var(--muted)}.ml12-staff-warning svg{flex:none}
+/* Buyer published size charts */
+.ml12-guide-page{max-width:1120px;margin:0 auto;padding:40px clamp(18px,4vw,50px) 70px;color:var(--ink)}.ml12-guide-back{font-size:13px}.ml12-guide-head{margin:32px 0 30px}.ml12-guide-head h1{font-size:clamp(35px,5vw,56px);letter-spacing:-.045em;margin:10px 0}.ml12-guide-head h1 em{color:var(--blue);font-style:normal}.ml12-guide-head p{font-size:16px;color:var(--muted);line-height:1.6;max-width:700px}.ml12-guide-section{border:1px solid var(--line);background:var(--surface);border-radius:13px;padding:22px;margin:18px 0}.ml12-guide-section h2{font-size:22px;margin:0 0 6px}.ml12-guide-section p{color:var(--muted);margin:0 0 12px;font-size:13px}.ml12-guide-pending{padding:15px;background:var(--surface-alt);border-radius:8px}.ml12-guide-note{display:flex;gap:10px;align-items:flex-start;line-height:1.6;font-size:13px;color:var(--muted);padding:14px 0}
+/* Manual QR payment and proof */
+.ml12-gcash-card{color:var(--ink);background:var(--surface-alt,var(--surface));border:1px solid var(--line);padding:18px;border-radius:11px;margin:20px 0;min-width:0;max-width:100%}
+.ml12-gcash-title{display:flex;align-items:flex-start;gap:12px}.ml12-gcash-title>svg{color:var(--blue);flex:none}.ml12-gcash-title h3{font-size:18px;margin:0 0 5px}.ml12-gcash-title p{font-size:13px;margin:0 0 12px;color:var(--muted)}
+.ml12-qr-details{display:flex;align-items:flex-start;flex-wrap:wrap;gap:18px;margin:12px 0;padding:15px;border:1px solid var(--line);background:var(--surface);border-radius:9px}
+.ml12-qr-details>a{display:block;background:white;padding:8px;border:1px solid #c5cad6;border-radius:7px}.ml12-qr-details img{width:min(240px,60vw);height:auto;aspect-ratio:1;object-fit:contain;display:block}
+.ml12-qr-details>div{flex:1;min-width:160px}.ml12-qr-details p{font-size:12px;color:var(--muted);margin:10px 0 2px}.ml12-qr-details strong{display:block;font-size:15px;color:var(--ink)}
+.ml12-qr-tag{font-size:10px;font-weight:900;letter-spacing:.1em;color:var(--blue-fg)}.ml12-qr-amount{font-size:24px;display:block;color:var(--ink)}.ml12-qr-details small{display:block;line-height:1.6;font-size:11px;color:var(--muted);margin-top:10px}
+.ml12-proof-form{display:grid;gap:12px}.ml12-proof-form label{font-weight:700;display:grid;gap:6px;font-size:13px}.ml12-proof-form input{padding:11px;border:1px solid var(--outline);border-radius:7px;color:var(--ink);background:var(--field-bg);width:100%;max-width:100%;font-size:13px}.ml12-proof-form button{display:flex;align-items:center;gap:9px;justify-content:center;cursor:pointer;max-width:330px}
+.ml12-pay-disclaimer{display:flex;align-items:flex-start;gap:8px;color:var(--muted);font-size:12px;line-height:1.55;margin:14px 0 0}.ml12-pay-disclaimer svg{flex:none}.ml12-pay-warning{color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:12px;border-radius:7px;font-size:13px}.ml12-pay-note{display:flex;gap:9px;align-items:center;font-size:13px;padding:13px;border:1px solid var(--outline);border-radius:8px;margin:10px 0}.ml12-pay-note svg{color:var(--blue-fg);flex:none}
+.ml12-staff-proof{border:1px solid var(--line);padding:12px;border-radius:8px;display:grid;gap:9px;margin:12px 0;font-size:13px}.ml12-staff-proof>div{display:flex;gap:10px;justify-content:space-between}.ml12-staff-proof a{color:var(--blue-fg);font-weight:800}.ml12-staff-proof button{cursor:pointer}
+/* Entrance animation and subtle feedback, without strong distracting motion */
+@keyframes ml12-in{from{opacity:.65;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ml12-glow{from{opacity:.6}to{opacity:1}}
+.ml12-guide-head,.ml12-guide-section,.ml12-admin-tools,.customizer-head,.v6-dashboard-hero{animation:ml12-in .55s ease both}
+.ml12-guide-section:nth-of-type(2){animation-delay:.07s}.ml12-guide-section:nth-of-type(3){animation-delay:.13s}
+.ml12-admin-panel,.ml12-qr-details{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.ml12-admin-panel:focus-within,.ml12-qr-details:hover{border-color:var(--blue);box-shadow:0 8px 25px #00000010}
+.ml12-size-link a:hover{color:var(--blue)}
+@media(max-width:920px){.ml12-admin-tool-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.ml12-admin-tools{padding:13px}.ml12-admin-panel{padding:13px}.ml12-guide-section{padding:14px}.ml12-gcash-card{padding:12px}.ml111-header .brand-word{font-size:12px!important}.ml12-qr-details{padding:10px}}
+@media(prefers-reduced-motion:reduce){.ml12-guide-head,.ml12-guide-section,.ml12-admin-tools,.customizer-head,.v6-dashboard-hero{animation:none!important}.ml12-admin-panel,.ml12-qr-details{transition:none!important}}

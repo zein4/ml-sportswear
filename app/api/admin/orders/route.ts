@@ -59,6 +59,21 @@ export async function PATCH(req:Request) {
     const result = await cancelCodOrder(db, order, body.reason, body.detail, 'Admin');
     return result.ok ? NextResponse.json({ok: true}) : bad(result.message, 409);
   }
+  if(action==='verify_qr_payment') {
+    if(order.checkout_method!=='qrph'||order.checkout_status!=='awaiting_payment')return bad('Not an unpaid manual GCash QR order.',409);
+    if(body.confirmedReceived!==true)return bad('Please independently check the transfer in GCash first.',400);
+    if(!isId(body.payment_id))return bad('Invalid payment proof.',400);
+    const {data:payment,error:paymentError}=await db.from('order_payments').select('id,status,expected_amount,method').eq('id',body.payment_id).eq('order_id',id).maybeSingle();
+    if(paymentError||!payment||!['submitted','verified'].includes(payment.status)||payment.method!=='gcash')return bad('Payment proof is not available for verification.',409);
+    if(Math.round(Number(payment.expected_amount)*100)!==Math.round(Number(order.quoted_total)*100))return bad('The proof amount does not match the order total.',409);
+    if(payment.status==='submitted'){
+      const {data:verified,error:verifyError}=await db.from('order_payments').update({status:'verified',reviewed_at:new Date().toISOString()}).eq('id',payment.id).eq('status','submitted').select('id').maybeSingle();
+      if(verifyError||!verified)return bad('Proof status changed. Refresh before retrying.',409);
+    }
+    const {data:updated,error:saveError}=await db.from('orders').update({checkout_status:'paid',paid_at:new Date().toISOString()}).eq('id',id).eq('checkout_status','awaiting_payment').select('id').maybeSingle();
+    if(saveError||!updated)return bad('Payment proof verified, but order status could not update. Contact the developer to reconcile this order before production.',500);
+    return NextResponse.json({ok:true});
+  }
   if(action==='fulfillment_checkout') {
     if(order.status==='cancelled'||order.checkout_status==='cancelled')return bad('Cancelled orders cannot be fulfilled.',409);
     if(!['cod','qrph'].includes(order.checkout_method))return bad('Not a checkout order.',409);
